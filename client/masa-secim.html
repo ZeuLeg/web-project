@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="icon" href="resimler/favicon/favicon1.png" type="image/png">
+    <title>Kütüphane Randevu Sistemi</title>
+    <link rel="stylesheet" href="masastyle.css">
+
+</head>
+<body>
+
+    <div id="category-section" class="category-wrapper">
+        <h2>Çalışma Bölgesi Seçin</h2>
+        <a class="home-link" href="index.html">Ana Sayfaya Dön</a>
+        <div class="card-container">
+            <div class="category-card">
+                <div class="card-img" style="background: #3498db;">Sessiz Alan</div>
+                <div class="card-body">
+                    <h3>Sessiz Çalışma</h3>
+                    <p>Tam konsantrasyon için fısıltısız bölge.</p>
+                    <button class="select-btn" onclick="showMap('Sessiz Çalışma Alanı')">Buraya Git</button>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="card-img" style="background: #e67e22;">Grup Odası</div>
+                <div class="card-body">
+                    <h3>Grup Çalışma</h3>
+                    <p>Ekip projeleri ve tartışmalar için ideal.</p>
+                    <button class="select-btn" onclick="showMap('Grup Çalışma Odası')">Buraya Git</button>
+                </div>
+            </div>
+
+            <div class="category-card">
+                <div class="card-img" style="background: #9b59b6;">Bilgisayarlı</div>
+                <div class="card-body">
+                    <h3>PC Laboratuvarı</h3>
+                    <p>Yüksek performanslı bilgisayarlara erişim.</p>
+                    <button class="select-btn" onclick="showMap('Bilgisayarlı Laboratuvar')">Buraya Git</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="booking-section" class="booking-container hidden">
+        <div class="table-section">
+            <button class="back-btn" onclick="goBack()">← Geri Dön</button>
+            <h2>Masa Seçimi ve Oturma Planı</h2>
+            <p style="color: #666;">Lütfen 20 masa içinden boş bir koltuk seçin.</p>
+            <div id="table-grid" class="table-grid"></div>
+        </div>
+
+        <div class="details-section">
+            <h3 style="margin-top: 0;">Randevu Detayları</h3>
+            <div class="info-card">
+                <p>Masa No: <span id="selected-desk-no">Henüz seçilmedi</span></p>
+                <p>Seçilen Koltuk: <span id="selected-seat-text" style="color: #e74c3c;">Henüz seçilmedi</span></p>
+                <p>Durum: <span id="desk-status">Lütfen boş bir koltuk seçin</span></p>
+                <p>Bölüm: <span id="selected-zone">Seçilmedi</span></p>
+            </div>
+            <button id="submit-btn" class="confirm-btn" disabled>Randevuyu Onayla</button>
+        </div>
+    </div>
+
+    <script>
+        const categorySection = document.getElementById('category-section');/*bölge seçimi kısmı*/
+        const bookingSection = document.getElementById('booking-section');/*masa seçimi kısmı*/
+        const zoneText = document.getElementById('selected-zone');/*seçilen bölge bilgisi*/
+        const deskNoText = document.getElementById('selected-desk-no');/*seçilen masa bilgisi*/
+        const selectedSeatText = document.getElementById('selected-seat-text');/*seçilen koltuk bilgisi*/
+        const submitBtn = document.getElementById('submit-btn');/*onay butonu*/
+        const deskStatusText = document.getElementById('desk-status');/*masa durumu bilgisi*/
+        const tableGrid = document.getElementById('table-grid');/*masa ve koltukların gösterileceği alan*/
+
+        const totalTables = 15;
+
+        function isSeatOccupied(tableNo, seatNo) {
+            // Sabit bir desen: her masada en az bir koltuk boş kalsın.
+            return (tableNo + seatNo) % 3 === 0 && seatNo !== 4;
+        }
+
+        function renderTables() {
+            tableGrid.innerHTML = '';
+
+            for (let tableNo = 1; tableNo <= totalTables; tableNo++) {//15 masa oluşturulacak
+                const wrapper = document.createElement('div');
+                wrapper.className = 'table-wrapper';
+
+                const label = document.createElement('div');/*masa numarası etiketi*/
+                label.className = 'table-label';
+                label.innerText = 'M-' + tableNo;
+                wrapper.appendChild(label);
+
+                for (let seatNo = 1; seatNo <= 4; seatNo++) {//her masada 4 koltuk olacak
+                    const seat = document.createElement('div');
+                    seat.className = 'seat seat-' + seatNo;
+
+                    if (isSeatOccupied(tableNo, seatNo)) {//koltuk dolu mu kontrolü
+                        seat.classList.add('occupied');
+                        seat.innerText = seatNo + ' - Dolu';
+                    } else {
+                        seat.classList.add('available');//koltuk boşsa tıklanabilir yap
+                        seat.innerText = seatNo + ' - Boş';
+                        seat.addEventListener('click', () => selectSeat(tableNo, seatNo, seat));
+                    }
+
+                    wrapper.appendChild(seat);//koltukları masaya ekle
+                }
+
+                tableGrid.appendChild(wrapper);//masayı tabloya ekle
+            }
+        }
+
+        function showMap(zoneName) {//bölge seçildikten sonra masa seçim ekranını göster ve bilgileri sıfırla
+            categorySection.classList.add('hidden');
+            bookingSection.classList.remove('hidden');
+
+            zoneText.innerText = zoneName;
+
+            deskNoText.innerText = 'Henüz seçilmedi';
+            selectedSeatText.innerText = 'Henüz seçilmedi';
+            selectedSeatText.style.color = '#e74c3c';
+            deskStatusText.innerText = 'Lütfen boş bir koltuk seçin';
+            clearActiveSeats();
+            submitBtn.disabled = true;
+            renderTables();
+        }
+
+        function goBack() {
+            bookingSection.classList.add('hidden');
+            categorySection.classList.remove('hidden');
+        }
+
+        function selectSeat(tableNo, seatNumber, seatElement) {
+            clearActiveSeats();
+            seatElement.classList.add('active');
+
+            deskNoText.innerText = 'M-' + tableNo + ' (Dörtlü Masa)';
+            selectedSeatText.innerText = 'Koltuk ' + seatNumber;
+            selectedSeatText.style.color = '#27ae60';
+            deskStatusText.innerText = 'Uygun, randevu alınabilir.';
+            submitBtn.disabled = false;
+        }
+
+        function clearActiveSeats() {
+            const allAvailableSeats = document.querySelectorAll('.seat.available');
+            allAvailableSeats.forEach((seat) => {
+                seat.classList.remove('active');
+            });
+        }
+
+        renderTables();
+    </script>
+
+</body>
+</html>
