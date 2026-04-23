@@ -39,7 +39,7 @@ loginForm.addEventListener("submit", async (event) => {
         setTimeout(() => {
             window.location.href = "index.html";
         }, 800);
-    } catch (error) {
+    } catch {
         showMessage("Sunucuya ulasilamadi. Lutfen tekrar dene.", "error");
     }
 });
