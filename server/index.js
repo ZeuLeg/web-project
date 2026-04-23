@@ -1,127 +1,68 @@
-const http = require("http");
-const fs = require("fs");
-const path = require("path");
+import express from "express";
+import pkg from "pg";
+import { fileURLToPath } from "url";
+import { dirname, join } from "path";
+
+// 1. ESM (Module) ortamı için __dirname çözümlemesi
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
-const HOST = process.env.HOST || "127.0.0.1";
-const CLIENT_DIR = path.join(__dirname, "..", "client");
+const CLIENT_DIR = join(__dirname, "..", "client");
+const { Pool } = pkg;
 
-// Ornek kullanici kaydi (gercek projede veritabanindan gelir).
-const users = [
-    { studentId: "230709074", password: "123456" },
-    { studentId: "250709095", password: "abc123" }
-];
+const app = express();
 
-const contentTypes = {
-    ".html": "text/html; charset=utf-8",
-    ".css": "text/css; charset=utf-8",
-    ".js": "application/javascript; charset=utf-8",
-    ".json": "application/json; charset=utf-8",
-    ".ico": "image/x-icon",
-    ".jpg": "image/jpeg",
-    ".jpeg": "image/jpeg",
-    ".png": "image/png"
-};
+// 2. PostgreSQL Veritabanı Bağlantı Havuzu (Pool)
+// docker-compose.yml içerisindeki DATABASE_URL değişkenini otomatik okur
+const pool = new Pool({
+    connectionString: process.env.DATABASE_URL
+});
 
-function sendJson(res, statusCode, data) {
-    res.writeHead(statusCode, { "Content-Type": contentTypes[".json"] });
-    res.end(JSON.stringify(data));
-}
+// 3. Middlewares (Ara Katmanlar)
+// Kaan'ın manuel yaptığı "chunk" toplama ve JSON parse işlemini tek satırda yapar
+app.use(express.json());
 
+// Kaan'ın yazdığı serveStatic fonksiyonunun (MIME tipleri dahil) tek satırlık tam karşılığı
+app.use(express.static(CLIENT_DIR));
+
+// 4. Güvenlik: Atatürk Üniversitesi Öğrenci Numarası Doğrulaması
 function isValidStudentId(studentId) {
     return /^[0-9]{2}0709[0-9]{3}$/.test(studentId);
 }
 
-function safePath(urlPath) {
-    const sanitized = path.normalize(urlPath).replace(/^(\.\.[/\\])+/, "");
-    return path.join(CLIENT_DIR, sanitized);
-}
+// 5. API Endpoints (Rotalar)
+app.post("/api/login", async (req, res) => {
+    const { studentId, password } = req.body;
 
-function serveStatic(req, res) {
-    let targetPath = req.url === "/" ? "/giriş.html" : req.url;
-    targetPath = targetPath.split("?")[0];
-
-    const filePath = safePath(targetPath);
-    const ext = path.extname(filePath).toLowerCase();
-    const contentType = contentTypes[ext] || "application/octet-stream";
-
-    if (!filePath.startsWith(CLIENT_DIR)) {
-        res.writeHead(403);
-        res.end("Forbidden");
-        return;
+    if (!studentId || !password) {
+        return res.status(400).json({ message: "Öğrenci ID ve şifre zorunludur." });
     }
 
-    fs.readFile(filePath, (err, content) => {
-        if (err) {
-            res.writeHead(404);
-            res.end("Dosya bulunamadi");
-            return;
-        }
+    if (!isValidStudentId(studentId)) {
+        return res.status(400).json({ message: "Öğrenci ID formatı hatalı." });
+    }
 
-        res.writeHead(200, { "Content-Type": contentType });
-        res.end(content);
-    });
-}
-
-function handleLogin(req, res) {
-    let body = "";
-
-    req.on("data", (chunk) => {
-        body += chunk.toString();
-        if (body.length > 1e6) {
-            req.socket.destroy();
-        }
-    });
-
-    req.on("end", () => {
-        let parsed;
-        try {
-            parsed = JSON.parse(body || "{}");
-        } catch (error) {
-            sendJson(res, 400, { message: "Gecersiz JSON verisi." });
-            return;
-        }
-
-        const studentId = String(parsed.studentId || "").trim();
-        const password = String(parsed.password || "");
-
-        if (!studentId || !password) {
-            sendJson(res, 400, { message: "Ogrenci ID ve sifre zorunludur." });
-            return;
-        }
-
-        if (!isValidStudentId(studentId)) {
-            sendJson(res, 400, { message: "Ogrenci ID formati hatali." });
-            return;
-        }
-
-        const matchedUser = users.find(
-            (user) => user.studentId === studentId && user.password === password
+    try {
+        // Veritabanı Sorgusu (SQL Injection'ı önlemek için parametrik sorgu [$1, $2] kullanıyoruz)
+        const result = await pool.query(
+            "SELECT * FROM users WHERE student_id = $1 AND password = $2",
+            [studentId, password]
         );
 
-        if (!matchedUser) {
-            sendJson(res, 401, { message: "Ogrenci ID veya sifre yanlis." });
-            return;
+        // Eğer eşleşen kayıt yoksa (Dönen satır sayısı 0 ise)
+        if (result.rows.length === 0) {
+            return res.status(401).json({ message: "Öğrenci ID veya şifre yanlış." });
         }
 
-        sendJson(res, 200, { message: "Giris basarili. Hos geldin!" });
-    });
-}
-
-const server = http.createServer((req, res) => {
-    if (req.method === "POST" && req.url === "/api/login") {
-        handleLogin(req, res);
-        return;
+        res.status(200).json({ message: "Giriş başarılı. Hoş geldin!" });
+    } catch (error) {
+        console.error("Veritabanı Hatası:", error);
+        res.status(500).json({ message: "Sunucu hatası oluştu." });
     }
-
-    if (req.method === "GET") {
-        serveStatic(req, res);
-        return;
-    }
-
-    sendJson(res, 405, { message: "Bu metot desteklenmiyor." });
 });
 
-server.listen(PORT, HOST, () => {
-    console.log(`Sunucu calisiyor: http://${HOST}:${PORT}`);
+// 6. Sunucuyu Ayağa Kaldırma
+app.listen(PORT, () => {
+    console.log(`Express sunucusu çalışıyor: http://localhost:${PORT}`);
 });
