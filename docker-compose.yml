@@ -1,6 +1,3 @@
-# /docker-compose.yml
-version: "3.8"
-
 services:
   api-server:
     build:
@@ -46,7 +43,7 @@ services:
     container_name: library_frontend
     restart: unless-stopped
     ports:
-      - "8080:80"
+      - "8081:80"
     volumes:
       # Client klasöründeki dosyaları, Nginx'in yayın klasörüne "Read Only" olarak kopyalar
       - ./client:/usr/share/nginx/html:ro
