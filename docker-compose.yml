@@ -17,8 +17,8 @@ services:
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 512M
+          cpus: "1.5"
+          memory: "1.5G"
     logging:
       driver: "json-file"
       options:
@@ -35,8 +35,23 @@ services:
       POSTGRES_DB: ${DB_NAME}
     volumes:
       - /mnt/data/postgres/library_db:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       resources:
         limits:
-          cpus: "0.50"
-          memory: 512M
+          cpus: "1.0"
+          memory: "1G"
+  frontend-server:
+    image: nginx:alpine
+    container_name: library_frontend
+    restart: unless-stopped
+    ports:
+      - "8080:80"
+    volumes:
+      # Client klasöründeki dosyaları, Nginx'in yayın klasörüne "Read Only" olarak kopyalar
+      - ./client:/usr/share/nginx/html:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"
