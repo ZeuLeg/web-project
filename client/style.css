@@ -1,477 +1,531 @@
-@import url('https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap');/* Bayray için Google Fonts'tan Lexend yazı tipini içe aktarıyoruz */
+@import url("https://fonts.googleapis.com/css2?family=Lexend:wght@400;500;700&display=swap"); /* Bayray için Google Fonts'tan Lexend yazı tipini içe aktarıyoruz */
 
 :root {
-    --bg-top: #e7f3ff;
-    --bg-bottom: #d2e5c8;
-    --card-bg: #f9fff4;
-    --accent: #1a6e4b;
-    --accent-hover: #14593c;
-    --text-main: #15324a;
-    --text-soft: #446076;
-    --input-bg: #ffffff;
-    --input-border: #9bb7cd;
-    --ring: rgba(26, 110, 75, 0.22);
+  --bg-top: #e7f3ff;
+  --bg-bottom: #d2e5c8;
+  --card-bg: #f9fff4;
+  --accent: #1a6e4b;
+  --accent-hover: #14593c;
+  --text-main: #15324a;
+  --text-soft: #446076;
+  --input-bg: #ffffff;
+  --input-border: #9bb7cd;
+  --ring: rgba(26, 110, 75, 0.22);
 }
 
 * {
-    box-sizing: border-box;
+  box-sizing: border-box;
 }
 
 body {
-    margin: 0;
-    min-height: 100vh;
-    display: grid;
-    place-items: center;
-    font-family: 'Lexend', sans-serif;
-    color: var(--text-main);
-    background:
-        linear-gradient(rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.38)),
-        url("resimler/k%C3%BCt%C3%BCphane.jpg.jpg") center/cover fixed no-repeat;/*bayray resmi için*/
-    padding: 24px;
+  margin: 0;
+  min-height: 100vh;
+  display: grid;
+  place-items: center;
+  font-family: "Lexend", sans-serif;
+  color: var(--text-main);
+  background:
+    linear-gradient(rgba(0, 0, 0, 0.38), rgba(0, 0, 0, 0.38)),
+    url("resimler/k%C3%BCt%C3%BCphane.jpg.jpg") center/cover fixed no-repeat; /*bayray resmi için*/
+  padding: 24px;
 }
 
-
-@media (max-width: 900px) {
-    .home-page {
-        justify-content: flex-start;
-        gap: 16px;
-        // eslint-disable-next-line css/no-invalid-properties
-        padding: 16px 16px calc(84px + env(safe-area-inset-bottom));
-    }
-
-    .home-page .top-photo-slider {
-        width: 100%;
-        border-radius: 12px;
-    }
-
-    .home-page .appointment-box {
-        width: 100%;
-        max-width: 520px;
-        padding: 24px 18px;
-        border-radius: 16px;
-        font-size: clamp(24px, 7vw, 36px);
-    }
-
-    .home-page .home-footer {
-        padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
-        min-height: 48px;
-        font-size: 13px;
-        letter-spacing: 0.2px;
-        background-color: rgba(0, 0, 0, 0.72);
-        backdrop-filter: blur(6px);
-        -webkit-backdrop-filter: blur(6px);
-    }
+.login-card {
+  width: min(100%, 460px);
+  background-color: rgba(249, 255, 244, 0.58);
+  border: 1px solid rgba(21, 50, 74, 0.18);
+  border-radius: 20px;
+  box-shadow: 0 18px 42px rgba(21, 50, 74, 0.18);
+  backdrop-filter: blur(10px);
+  -webkit-backdrop-filter: blur(10px); /* Safari için */
+  padding: 28px 24px;
+  animation: rise 500ms ease-out;
+  transition:
+    background-color 180ms ease,
+    box-shadow 180ms ease,
+    transform 180ms ease;
 }
 
-.home-page {/* Anasayfa genel stili */
-    background:
-        radial-gradient(circle at 16% 20%, rgba(201, 154, 89, 0.2), transparent 34%),
-        radial-gradient(circle at 86% 76%, rgba(122, 82, 45, 0.18), transparent 40%),
-        repeating-linear-gradient(
-            90deg,
-            rgba(236, 214, 176, 0.04) 0,
-            rgba(236, 214, 176, 0.04) 2px,
-            rgba(0, 0, 0, 0) 2px,
-            rgba(0, 0, 0, 0) 28px
-        ),
-        linear-gradient(155deg, #0c1218 0%, #17110a 52%, #271b10 100%);
-    position: relative;
-    overflow: hidden;
-    display: flex;
-    flex-direction: column;
-    justify-content: center;
-    align-items: center;
-    gap: 24px;
-    padding: 24px 24px 92px;
+.login-card:hover,
+.login-card:focus-within {
+  background-color: rgba(249, 255, 244, 0.92);
+  box-shadow: 0 22px 52px rgba(21, 50, 74, 0.26);
+  transform: translateY(-2px);
 }
 
-.home-page::before,
-.home-page::after {
-    content: "";
-    position: absolute;
-    pointer-events: none;
-    z-index: 1;
-    filter: blur(26px);
-    opacity: 0.55;
+h1 {
+  margin: 0 0 8px;
+  font-size: 28px;
+  letter-spacing: 0.4px;
 }
 
-.home-page::before {
-    width: min(44vw, 460px);
-    height: min(44vw, 460px);
-    top: -80px;
-    left: -90px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(217, 173, 100, 0.5) 0%, rgba(217, 173, 100, 0) 70%);
-    animation: home-glow-drift-a 18s ease-in-out infinite;
+.subtitle {
+  margin: 0 0 22px;
+  color: var(--text-soft);
+  font-size: 14px;
 }
 
-.home-page::after {
-    width: min(40vw, 420px);
-    height: min(40vw, 420px);
-    right: -70px;
-    bottom: 30px;
-    border-radius: 50%;
-    background: radial-gradient(circle, rgba(125, 87, 56, 0.46) 0%, rgba(125, 87, 56, 0) 72%);
-    animation: home-glow-drift-b 20s ease-in-out infinite;
+label {
+  display: block;
+  margin-bottom: 6px;
+  font-weight: 500;
 }
 
-.home-page .appointment-box {/* Randevu alma kutusunun stili */
-    position: relative;
-    z-index: 2;
-    display: inline-block;
-    text-decoration: none;
-    width: min(90vw, 420px);
-    padding: 32px 24px;
-    text-align: center;
-    font-size: clamp(28px, 5vw, 42px);
-    font-weight: 700;
-    letter-spacing: 0.5px;
-    color: #ffffff;
-    background: linear-gradient(135deg, rgba(26, 110, 75, 0.88), rgba(21, 50, 74, 0.82));
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    border-radius: 18px;
-    box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-    animation: soft-appear 1400ms ease-out;/* Randevu alma kutusunun açılış animasyonu */
+.field {
+  margin-bottom: 14px;
 }
 
-.home-page .appointment-box:hover {/* Randevu alma kutusunun üzerine gelindiğinde uygulanacak stil */
-    transform: translateY(-2px);
-    box-shadow: 0 24px 52px rgba(0, 0, 0, 0.3);
+input[type="text"] {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-main);
+  background-color: var(--input-bg);
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.home-page .top-photo-slider {/* Anasayfa üstündeki fotoğraf kaydırıcısının konteyneri */
-    position: relative;
-    z-index: 2;
-    width: min(92vw, 880px);
-    overflow: hidden;
-    border-radius: 14px;
-    border: 1px solid rgba(255, 255, 255, 0.28);
-    box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
-    background: rgba(12, 20, 29, 0.44);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
+input[type="text"]:focus,
+input[type="password"]:focus {
+  border-color: var(--accent);
+  box-shadow: 0 0 0 4px var(--ring);
 }
 
-/* Sayfanın en üstünde sabit duran ve sürekli kayan duyuru çubuğu */
-.top-announcement {
-    position: fixed;
-    top: 12px;
-    left: 0;
-    right: 0;
-    z-index: 9999;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    gap: 8px;
-    pointer-events: none;
+input[type="password"] {
+  width: 100%;
+  border: 1px solid var(--input-border);
+  border-radius: 12px;
+  padding: 12px 14px;
+  font-size: 15px;
+  color: var(--text-main);
+  background-color: var(--input-bg);
+  outline: none;
+  transition:
+    border-color 180ms ease,
+    box-shadow 180ms ease;
 }
 
-.top-announcement .marquee {
-    width: min(100%, 920px);
-    background: rgba(0,0,0,0.6);
-    color: #ffffff;
-    border-radius: 12px;
-    overflow: hidden;
-    box-shadow: 0 6px 18px rgba(0,0,0,0.32);
+.button-row {
+  display: grid;
+  grid-template-columns: 1fr 1fr;
+  gap: 10px;
+  margin-top: 8px;
 }
 
-.top-announcement .marquee .track {
-    display: inline-block;
-    white-space: nowrap;
-    padding: 10px 0;
-    will-change: transform;
-    /* Yazıyı sağdan sola sürekli akıtmak için animasyon */
-    animation: marquee 12s linear infinite;
+input[type="submit"],
+input[type="reset"] {
+  width: 100%;
+  padding: 12px 10px;
+  border: none;
+  border-radius: 12px;
+  font-size: 15px;
+  font-weight: 600;
+  cursor: pointer; /* button elementlerinin varsayılan olarak gelen tıklanabilir imleci */
+  transition:
+    transform 120ms ease,
+    filter 180ms ease;
 }
 
-.top-announcement .marquee .track span {
-    display: inline-block;
-    padding: 0 24px;
-    font-weight: 700;
+input[type="submit"] {
+  background-color: var(--accent);
+  color: #ffffff;
 }
 
-/* Duyuru alanının altındaki şikayet bağlantısı */
-.top-announcement .complaint-link {
-    margin-top: 8px;
-    display: inline-flex;
-    align-items: center;
-    justify-content: center;
-    padding: 7px 14px;
-    border-radius: 999px;
-    background: rgba(26, 110, 75, 0.92);
-    color: #ffffff;
-    font-weight: 700;
-    text-decoration: none;
-    pointer-events: auto;
-    box-shadow: 0 6px 16px rgba(0, 0, 0, 0.26);
-    transition: transform 140ms ease, background-color 140ms ease;
+input[type="reset"] {
+  background-color: #dce9d6;
+  color: #1d3b2d;
 }
 
-.top-announcement .complaint-link:hover {
-    background: rgba(20, 89, 60, 0.96);
-    transform: translateY(-1px);
+input[type="submit"]:hover {
+  background-color: var(--accent-hover);
+  transform: translateY(-1px);
 }
 
-/* Duyurunun hemen altına gelen şikayet bağlantısı için dış kapsayıcı */
-.complaint-link-wrap {
-    position: fixed;
-    top: 56px;
-    left: 0;
-    right: 0;
-    z-index: 9998;
-    display: flex;
-    justify-content: center;
-    pointer-events: none;
+input[type="reset"]:hover {
+  filter: brightness(0.97);
+  transform: translateY(-1px);
 }
 
-.complaint-link-wrap .complaint-link {
-    pointer-events: auto;
+.form-message {
+  min-height: 22px;
+  margin: 14px 0 0;
+  font-size: 14px;
+  font-weight: 500;
 }
 
-@keyframes marquee {
-    0% { transform: translateX(100%); }
-    100% { transform: translateX(-100%); }
+.form-message.info {
+  color: #1d3f5e;
+}
+
+.form-message.success {
+  color: #14593c;
+}
+
+.form-message.error {
+  color: #a43131;
+}
+
+.form-link {
+  display: block;
+  margin-top: 10px;
+  color: var(--accent);
+  font-size: 14px;
+  font-weight: 600;
+  text-align: center;
+  text-decoration: none;
+}
+
+.form-link:hover {
+  color: var(--accent-hover);
+  text-decoration: underline;
+}
+
+@keyframes rise {
+  /* login kartının açılış animasyonu */
+  from {
+    opacity: 0;
+    transform: translateY(14px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
 }
 
 @media (max-width: 520px) {
-    .top-announcement { top: 8px; }
-    .top-announcement .marquee .track span { padding: 0 14px; font-size: 13px; }
-    .top-announcement .complaint-link { padding: 6px 12px; font-size: 13px; }
-    .complaint-link-wrap { top: 50px; }
+  .login-card {
+    padding: 22px 16px;
+    border-radius: 16px;
+  }
+
+  h1 {
+    font-size: 24px;
+  }
+
+  .button-row {
+    grid-template-columns: 1fr;
+  }
 }
 
-.home-page .top-photo-track {/* Anasayfa üstündeki fotoğraf kaydırıcısının içindeki resimleri taşıyan konteyner */
-    display: flex;
-    width: max-content;
-    gap: 10px;
-    padding: 10px;
-    animation: top-slide-left 20s linear infinite;
+.home-page {
+  background: #000000;
+  position: relative;
+  overflow: hidden;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  gap: 24px;
+  padding: 24px 24px 92px;
 }
 
-.home-page .top-photo-track img {/* Anasayfa üstündeki fotoğraf kaydırıcısının içindeki resimler */
-    width: 260px;
-    height: 150px;
-    object-fit: cover;
-    border-radius: 10px;
-    flex-shrink: 0;
+.home-page .home-actions {
+  position: relative;
+  z-index: 2;
+  display: grid;
+  width: min(90vw, 420px);
+  gap: 10px;
+}
+
+.home-page .appointment-box {
+  position: relative;
+  display: inline-block;
+  text-decoration: none;
+  width: 100%;
+  padding: 32px 24px;
+  text-align: center;
+  font-size: clamp(28px, 5vw, 42px);
+  font-weight: 700;
+  letter-spacing: 0.5px;
+  color: #ffffff;
+  background: linear-gradient(
+    135deg,
+    rgba(26, 110, 75, 0.88),
+    rgba(21, 50, 74, 0.82)
+  );
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  border-radius: 18px;
+  box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+  animation: soft-appear 1400ms ease-out; /* Randevu alma kutusunun açılış animasyonu */
+}
+
+.home-page .home-action-link {
+  display: block;
+  width: 100%;
+  padding: 14px 18px;
+  border: 1px solid rgba(255, 255, 255, 0.35);
+  border-radius: 12px;
+  background: rgba(249, 255, 244, 0.86);
+  color: #15324a;
+  font-size: 16px;
+  font-weight: 700;
+  text-align: center;
+  text-decoration: none;
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.home-page .appointment-box:hover,
+.home-page .home-action-link:hover {
+  /* Ana sayfa bağlantılarının üzerine gelindiğinde uygulanacak stil */
+  transform: translateY(-2px);
+  box-shadow: 0 24px 52px rgba(0, 0, 0, 0.3);
+}
+
+.home-page .top-photo-slider {
+  /* Anasayfa üstündeki fotoğraf kaydırıcısının konteyneri */
+  position: relative;
+  z-index: 2;
+  width: min(92vw, 880px);
+  overflow: hidden;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.28);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
+  background: rgba(12, 20, 29, 0.44);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
+}
+
+.home-page .top-photo-track {
+  /* Anasayfa üstündeki fotoğraf kaydırıcısının içindeki resimleri taşıyan konteyner */
+  display: flex;
+  width: max-content;
+  gap: 10px;
+  padding: 10px;
+  animation: top-slide-left 20s linear infinite;
+}
+
+.home-page .top-photo-track img {
+  /* Anasayfa üstündeki fotoğraf kaydırıcısının içindeki resimler */
+  width: 260px;
+  height: 150px;
+  object-fit: cover;
+  border-radius: 10px;
+  flex-shrink: 0;
 }
 
 .home-page .top-photo-slider:hover .top-photo-track {
-    animation-play-state: paused;
+  animation-play-state: paused;
 }
 
-.home-page .image-slider {/* Slider konteyneri */
-    position: fixed;
-    inset: 0;
-    z-index: 0;
-    width: 100vw;
-    overflow: hidden;
-    border-radius: 0;
-    border: 0;
-    background: #000000;
-    box-shadow: none;
-    pointer-events: none;
+.home-page .image-slider {
+  /* Slider konteyneri */
+  position: fixed;
+  inset: 0;
+  z-index: 0;
+  width: 100vw;
+  overflow: hidden;
+  border-radius: 0;
+  border: 0;
+  background: #000000;
+  box-shadow: none;
+  pointer-events: none;
 }
 
-.home-page .slider-track {/* Slider içindeki resimleri taşıyan konteyner */
-    display: flex;
-    width: max-content;
-    height: 100%;
-    gap: 0;
-    padding: 0;
-    animation: slide-left 34s linear infinite;
+.home-page .slider-track {
+  /* Slider içindeki resimleri taşıyan konteyner */
+  display: flex;
+  width: max-content;
+  height: 100%;
+  gap: 0;
+  padding: 0;
+  animation: slide-left 34s linear infinite;
 }
 
-.home-page .slider-track img {/* Slider içindeki resimler */
-    width: 100vw;
-    height: 100vh;
-    object-fit: cover;
-    border-radius: 0;
-    flex-shrink: 0;
-    opacity: 0.42;
+.home-page .slider-track img {
+  /* Slider içindeki resimler */
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  border-radius: 0;
+  flex-shrink: 0;
+  opacity: 0.42;
 }
 
-.home-page .image-slider:hover .slider-track {/* Sliderın üzerine gelindiğinde animasyonu durdurur */
-    animation-play-state: paused;
+.home-page .image-slider:hover .slider-track {
+  /* Sliderın üzerine gelindiğinde animasyonu durdurur */
+  animation-play-state: paused;
 }
 
-.home-page .home-footer {/* Anasayfa altbilgisi */
-    position: fixed;
-    z-index: 2;
-    left: 0;
-    right: 0;
-    bottom: 0;
-    padding: 14px 16px;
-    min-height: 52px;
-    background-color: #000000;
-    text-align: center;
-    color: #ffffff;
-    font-size: 14px;
-    font-weight: 600;
-    letter-spacing: 0.3px;
+.home-page .home-footer {
+  /* Anasayfa altbilgisi */
+  position: fixed;
+  z-index: 2;
+  left: 0;
+  right: 0;
+  bottom: 0;
+  padding: 14px 16px;
+  min-height: 52px;
+  background-color: #000000;
+  text-align: center;
+  color: #ffffff;
+  font-size: 14px;
+  font-weight: 600;
+  letter-spacing: 0.3px;
 }
 
-@keyframes slide-left {/* Sliderın hareket animasyonu */
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-50%);
-    }
+@keyframes slide-left {
+  /* Sliderın hareket animasyonu */
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-@keyframes top-slide-left {/* Anasayfa üstündeki fotoğraf kaydırıcısının hareket animasyonu */
-    from {
-        transform: translateX(0);
-    }
-    to {
-        transform: translateX(-50%);
-    }
+@keyframes top-slide-left {
+  /* Anasayfa üstündeki fotoğraf kaydırıcısının hareket animasyonu */
+  from {
+    transform: translateX(0);
+  }
+  to {
+    transform: translateX(-50%);
+  }
 }
 
-@keyframes soft-appear {/* Randevu alma kutusunun açılış animasyonu */
-    from {
-        opacity: 0;
-        transform: translateY(18px) scale(0.98);
-    }
-    to {
-        opacity: 1;
-        transform: translateY(0) scale(1);
-    }
-}
-
-@keyframes home-glow-drift-a {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-    50% {
-        transform: translate(26px, 18px) scale(1.08);
-    }
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-}
-
-@keyframes home-glow-drift-b {
-    0% {
-        transform: translate(0, 0) scale(1);
-    }
-    50% {
-        transform: translate(-22px, -16px) scale(1.06);
-    }
-    100% {
-        transform: translate(0, 0) scale(1);
-    }
-}
-
-.table-page {/* Randevu alma sayfasının genel stili */
-    min-height: 100vh;
-    margin: 0;
-    padding: 0;
-    background:
-        radial-gradient(circle at 15% 20%, rgba(141, 176, 209, 0.26), transparent 34%),
-        radial-gradient(circle at 85% 80%, rgba(56, 111, 86, 0.22), transparent 36%),
-        linear-gradient(145deg, #edf4ff, #f9fff4);
-}
-
-.table-page .table-shell {/* Randevu alma kutusunun stili */
-    width: min(100%, 1160px);
-}
-
-.table-page h1 {/* Randevu alma sayfasının başlığı */
-    margin: 0;
-    color: #17324a;
-}
-
-.table-page .table-subtitle {/* Randevu alma sayfasının alt başlığı */
-    margin: 10px 0 0;
-    color: #48627b;
-}
-
-.table-page .selector-card {/* Masa seçim kartının stili */
-    border-radius: 18px;
-    background: rgba(255, 255, 255, 0.92);
-    backdrop-filter: blur(4px);
-    -webkit-backdrop-filter: blur(4px);
-}
-
-.table-page .desk-grid {/* Masaların listelendiği ızgara düzeni */
-    display: grid;
-    grid-template-columns: repeat(4, minmax(56px, 1fr));
-    gap: 10px;
-}
-
-.table-page .desk-grid input[type=radio] {/* Radyo butonlarının görünmez olması için stil */
-    position: absolute;
+@keyframes soft-appear {
+  /* Randevu alma kutusunun açılış animasyonu */
+  from {
     opacity: 0;
-    pointer-events: none;
+    transform: translateY(18px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
 }
 
-.table-page .desk-chip {/* Masa seçeneklerinin stili */
-    display: grid;
-    place-items: center;
-    min-height: 52px;
-    width: 100%;
-    border: 1px solid #bfd1e2;
-    border-radius: 12px;
-    background: #f7fbff;
-    color: #20415c;
-    font-weight: 600;
-    cursor: pointer;
-    transition: transform 140ms ease, box-shadow 180ms ease, border-color 180ms ease, background-color 180ms ease;
+.table-page {
+  /* Randevu alma sayfasının genel stili */
+  min-height: 100vh;
+  margin: 0;
+  padding: 0;
+  background:
+    radial-gradient(
+      circle at 15% 20%,
+      rgba(141, 176, 209, 0.26),
+      transparent 34%
+    ),
+    radial-gradient(
+      circle at 85% 80%,
+      rgba(56, 111, 86, 0.22),
+      transparent 36%
+    ),
+    linear-gradient(145deg, #edf4ff, #f9fff4);
 }
 
-.table-page .desk-chip:hover {/* Masa seçeneklerinin üzerine gelindiğinde uygulanacak stil */
-    transform: translateY(-1px);
-    border-color: #88a6c0;
-    box-shadow: 0 10px 20px rgba(32, 65, 92, 0.12);
+.table-page .table-shell {
+  /* Randevu alma kutusunun stili */
+  width: min(100%, 1160px);
 }
 
-.table-page .desk-grid input[type=radio]:checked + .desk-chip {/* Seçili masa seçeneğinin stili */
-    border-color: #1a6e4b;
-    background: #e8f7ef;
-    color: #134632;
-    box-shadow: 0 0 0 3px rgba(26, 110, 75, 0.18);
+.table-page h1 {
+  /* Randevu alma sayfasının başlığı */
+  margin: 0;
+  color: #17324a;
 }
 
-.table-page .selected-readout {/* Seçilen masanın okunabilir şekilde gösterilmesi için stil */
-    margin: 0;
-    padding: 10px 12px;
-    border-radius: 10px;
-    background: #eef6ff;
-    color: #1d3f5e;
+.table-page .table-subtitle {
+  /* Randevu alma sayfasının alt başlığı */
+  margin: 10px 0 0;
+  color: #48627b;
 }
 
-.table-page .table-actions {/* Randevu alma butonlarının stili */
-    margin-top: 0;
+.table-page .selector-card {
+  /* Masa seçim kartının stili */
+  border-radius: 18px;
+  background: rgba(255, 255, 255, 0.92);
+  backdrop-filter: blur(4px);
+  -webkit-backdrop-filter: blur(4px);
 }
 
-@media (max-width: 760px) {/* Randevu alma sayfasının mobil görünümü için medya sorgusu */
-    .home-page .top-photo-track img {
-        width: 210px;
-        height: 128px;
-    }
-
-    .table-page .desk-grid {
-        grid-template-columns: repeat(4, minmax(56px, 1fr));/* Masaların 4 sütunlu kalması, ancak her birinin minimum genişliğinin 56px olması sağlanır */
-    }
+.table-page .desk-grid {
+  /* Masaların listelendiği ızgara düzeni */
+  display: grid;
+  grid-template-columns: repeat(4, minmax(56px, 1fr));
+  gap: 10px;
 }
 
-@media (max-width: 450px) {/* Randevu alma sayfasının daha küçük ekranlar için görünümü için medya sorgusu */
-    .home-page .top-photo-track img {
-        width: 170px;
-        height: 106px;
-    }
-
-    .home-page .appointment-box {
-        padding: 20px 14px;
-        font-size: clamp(22px, 8vw, 30px);
-    }
-
-    .table-page .desk-grid {
-        grid-template-columns: repeat(3, minmax(56px, 1fr));
-    }
+.table-page .desk-grid input[type="radio"] {
+  /* Radyo butonlarının görünmez olması için stil */
+  position: absolute;
+  opacity: 0;
+  pointer-events: none;
 }
 
+.table-page .desk-chip {
+  /* Masa seçeneklerinin stili */
+  display: grid;
+  place-items: center;
+  min-height: 52px;
+  width: 100%;
+  border: 1px solid #bfd1e2;
+  border-radius: 12px;
+  background: #f7fbff;
+  color: #20415c;
+  font-weight: 600;
+  cursor: pointer;
+  transition:
+    transform 140ms ease,
+    box-shadow 180ms ease,
+    border-color 180ms ease,
+    background-color 180ms ease;
+}
+
+.table-page .desk-chip:hover {
+  /* Masa seçeneklerinin üzerine gelindiğinde uygulanacak stil */
+  transform: translateY(-1px);
+  border-color: #88a6c0;
+  box-shadow: 0 10px 20px rgba(32, 65, 92, 0.12);
+}
+
+.table-page .desk-grid input[type="radio"]:checked + .desk-chip {
+  /* Seçili masa seçeneğinin stili */
+  border-color: #1a6e4b;
+  background: #e8f7ef;
+  color: #134632;
+  box-shadow: 0 0 0 3px rgba(26, 110, 75, 0.18);
+}
+
+.table-page .selected-readout {
+  /* Seçilen masanın okunabilir şekilde gösterilmesi için stil */
+  margin: 0;
+  padding: 10px 12px;
+  border-radius: 10px;
+  background: #eef6ff;
+  color: #1d3f5e;
+}
+
+.table-page .table-actions {
+  /* Randevu alma butonlarının stili */
+  margin-top: 0;
+}
+
+@media (max-width: 760px) {
+  /* Randevu alma sayfasının mobil görünümü için medya sorgusu */
+  .home-page .top-photo-track img {
+    width: 210px;
+    height: 128px;
+  }
+
+  .table-page .desk-grid {
+    grid-template-columns: repeat(
+      4,
+      minmax(56px, 1fr)
+    ); /* Masaların 4 sütunlu kalması, ancak her birinin minimum genişliğinin 56px olması sağlanır */
+  }
+}
+
+@media (max-width: 450px) {
+  /* Randevu alma sayfasının daha küçük ekranlar için görünümü için medya sorgusu */
+  .table-page .desk-grid {
+    grid-template-columns: repeat(3, minmax(56px, 1fr));
+  }
+}

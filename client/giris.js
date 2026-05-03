@@ -29,17 +29,17 @@ loginForm.addEventListener("submit", async (event) => {
         const result = await response.json();
 
         if (!response.ok) {
-            showMessage(result.message || "Giris basarisiz.", "error");
+            showMessage(result.message || "Giriş başarısız.", "error");
             return;
         }
 
-        showMessage(result.message || "Giris basarili.", "success");
+        showMessage(result.message || "Giriş başarılı.", "success");
 
-        // Gercek projede kullanici paneline/rezervasyon ekranina yonlendirilir.
+        // Gerçek projede kullanıcı paneline/rezervasyon ekranına yönlendirilir.
         setTimeout(() => {
             window.location.href = "index.html";
         }, 800);
     } catch {
-        showMessage("Sunucuya ulasilamadi. Lutfen tekrar dene.", "error");
+        showMessage("Sunucuya ulaşılamadı. Lütfen tekrar dene.", "error");
     }
 });

@@ -1,61 +1,41 @@
 <!DOCTYPE html>
-<html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Kütüphane Randevu Sistemi</title>
+<html>
+    <head>
+        <link rel="icon" href="resimler/favicon/favicon1.png" type="image/png">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="style.css">
+        <title>Kütüphane</title>
+    </head>
+    <body class="home-page">
+        <section class="top-photo-slider" aria-label="Üst kayan fotoğraf alanı">
+            <div class="top-photo-track">
+                <img src="index%20fota%C4%9Fraf/k%C3%BCt%C3%BCpahenfota%C4%9Fraf1.jpg" alt="Kütüphane fotoğraf 1">
+                <img src="index%20fota%C4%9Fraf/k%C3%BCt%C3%BCpahenfota%C4%9Fraf2.jpg" alt="Kütüphane fotoğraf 2">
+                <img src="index%20fota%C4%9Fraf/k%C3%BCt%C3%BCphanefota%C4%9Fraf3.jpg" alt="Kütüphane fotoğraf 3">
 
-    <link rel="icon" href="resimler/favicon/favicon1.png" type="image/png">
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet">
-    <link rel="stylesheet" href="index.css">
-</head>
-<body>
-
-    <div class="announcement-bar" aria-label="Kütüphane çalışma saati duyurusu">
-        <div class="announcement-track">
-            <span>Kütüphanemiz saat 9 ile 23 arasında açıktır.</span>
-        </div>
-    </div>
-
-    <nav class="navbar navbar-expand-lg navbar-dark py-3">
-        <div class="container">
-            <a class="navbar-brand fw-bold fs-4" href="#"> Kütüphane</a>
-
-            <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#navbarContent" aria-label="Menüyü aç">
-                <span class="navbar-toggler-icon"></span>
-            </button>
-
-            <div class="collapse navbar-collapse" id="navbarContent">
-                <ul class="navbar-nav ms-auto align-items-center">
-                    <li class="nav-item">
-                        <a class="nav-link complaint-link fw-semibold" href="şikayetsayfası.html">Şikayet Sayfasına Git</a>
-                    </li>
-                </ul>
+                <img src="index%20fota%C4%9Fraf/k%C3%BCt%C3%BCpahenfota%C4%9Fraf1.jpg" alt="Kütüphane fotoğraf 1">
+                <img src="index%20fota%C4%9Fraf/k%C3%BCt%C3%BCpahenfota%C4%9Fraf2.jpg" alt="Kütüphane fotoğraf 2">
+                <img src="index%20fota%C4%9Fraf/k%C3%BCt%C3%BCphanefota%C4%9Fraf3.jpg" alt="Kütüphane fotoğraf 3">
             </div>
-        </div>
-    </nav>
+        </section>
+        <nav class="home-actions" aria-label="Ana sayfa bağlantıları">
+            <a class="appointment-box" href="masa-secim.html">Randevu Al</a>
+            <a class="home-action-link" href="giris.html">Giriş Yap</a>
+            <a class="home-action-link" href="kayit.html">Kayıt Ol</a>
+        </nav>
+        <section class="image-slider" aria-label="Kayan görseller">
+            <div class="slider-track">
+                <img src="resimler/k%C3%BCt%C3%BCphane.jpg.jpg" alt="Kütüphane salonu">
+                <img src="resimler/orjinal.jpg" alt="Kütüphane alanı">
+                <img src="resimler/bayrak.jpg.jpg" alt="Bayrak görseli">
+                <img src="resimler/t%C3%BCrkiyeharita.jpg.jpg" alt="Türkiye harita görseli">
 
-    <main class="main-content container">
-        <div class="photo-slider" aria-label="Kütüphane fotoğraf alanı">
-            <div class="photo-track">
-                <img src="index fotağraf/kütüpahenfotağraf1.jpg" alt="Kütüphane Görsel 1">
-                <img src="index fotağraf/kütüpahenfotağraf2.jpg" alt="Kütüphane Görsel 2">
-                <img src="index fotağraf/kütüphanefotağraf3.jpg" alt="Kütüphane Görsel 3">
-                <img src="index fotağraf/kütüpahenfotağraf1.jpg" alt="Kütüphane Görsel 1">
-                <img src="index fotağraf/kütüpahenfotağraf2.jpg" alt="Kütüphane Görsel 2">
-                <img src="index fotağraf/kütüphanefotağraf3.jpg" alt="Kütüphane Görsel 3">
+                <img src="resimler/k%C3%BCt%C3%BCphane.jpg.jpg" alt="Kütüphane salonu">
+                <img src="resimler/orjinal.jpg" alt="Kütüphane alanı">
+                <img src="resimler/bayrak.jpg.jpg" alt="Bayrak görseli">
+                <img src="resimler/t%C3%BCrkiyeharita.jpg.jpg" alt="Türkiye harita görseli">
             </div>
-        </div>
-
-        <button class="btn btn-randevu text-white" onclick="location.href='masa-secim.html'">Randevu Al</button>
-    </main>
-
-    <footer class="footer">
-        <div class="container fw-bold">
-            TÜM HAKLAR SAKLIDIR | ZEDAKY
-        </div>
-    </footer>
-
-    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
-</body>
+        </section>
+        <footer class="home-footer">TÜM HAKLAR SAKLIDIR | ZEDAKY</footer>
+    </body>
 </html>
