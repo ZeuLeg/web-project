@@ -1,0 +1,30 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <style>
+    /* Varsayılan (Karanlık Mod) Renkleri */
+    .bg { fill: #1a1a2e; }
+    .accent-blue { fill: #4da6ff; }
+    .accent-green { fill: #20c997; }
+    .core { fill: #ffffff; }
+
+    /* Sistem Gündüz Modundayken (Light Theme) Otomatik Devreye Giren Renkler */
+    @media (prefers-color-scheme: light) {
+      .bg { fill: #eef2f6; }
+      .accent-blue { fill: #0056b3; }
+      .accent-green { fill: #0f7a55; }
+      .core { fill: #121212; }
+    }
+  </style>
+
+  <!-- Pürüzsüz Arka Plan (iOS Tarzı Squircle) -->
+  <rect class="bg" width="64" height="64" rx="14" />
+
+  <!-- Kalınlaştırılmış Sol Kitap Yaprağı (Mavi Veri Bloğu) -->
+  <path class="accent-blue" d="M30 48 V16 C22 12 12 16 12 16 V52 C12 52 22 48 30 48 Z" />
+
+  <!-- Kalınlaştırılmış Sağ Kitap Yaprağı (Yeşil Veri Bloğu) -->
+  <path class="accent-green" d="M34 48 V16 C42 12 52 16 52 16 V52 C52 52 42 48 34 48 Z" />
+
+  <!-- Arayüzdeki Çatışmayı Önleyen İzole Merkez Çekirdeği -->
+  <circle cx="32" cy="32" r="6" class="bg" />
+  <circle cx="32" cy="32" r="3" class="core" />
+</svg>
