@@ -25,8 +25,12 @@ const pool = new Pool({
 // Kaan'ın manuel yaptığı "chunk" toplama ve JSON parse işlemini tek satırda yapar
 app.use(express.json());
 
+app.get("/", (req, res) => {
+  res.redirect(302, "/giris.html");
+});
+
 // Kaan'ın yazdığı serveStatic fonksiyonunun (MIME tipleri dahil) tek satırlık tam karşılığı
-app.use(express.static(CLIENT_DIR));
+app.use(express.static(CLIENT_DIR, { index: false }));
 
 async function initializeDatabase() {
   await pool.query(`
