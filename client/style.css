@@ -140,6 +140,40 @@ input[type=reset]:hover {
     transform: translateY(-1px);
 }
 
+.form-message {
+    min-height: 22px;
+    margin: 14px 0 0;
+    font-size: 14px;
+    font-weight: 500;
+}
+
+.form-message.info {
+    color: #1d3f5e;
+}
+
+.form-message.success {
+    color: #14593c;
+}
+
+.form-message.error {
+    color: #a43131;
+}
+
+.form-link {
+    display: block;
+    margin-top: 10px;
+    color: var(--accent);
+    font-size: 14px;
+    font-weight: 600;
+    text-align: center;
+    text-decoration: none;
+}
+
+.form-link:hover {
+    color: var(--accent-hover);
+    text-decoration: underline;
+}
+
 @keyframes rise {/* login kartının açılış animasyonu */
     from {
         opacity: 0;
@@ -178,12 +212,19 @@ input[type=reset]:hover {
     padding: 24px 24px 92px;
 }
 
-.home-page .appointment-box {
+.home-page .home-actions {
     position: relative;
     z-index: 2;
+    display: grid;
+    width: min(90vw, 420px);
+    gap: 10px;
+}
+
+.home-page .appointment-box {
+    position: relative;
     display: inline-block;
     text-decoration: none;
-    width: min(90vw, 420px);
+    width: 100%;
     padding: 32px 24px;
     text-align: center;
     font-size: clamp(28px, 5vw, 42px);
@@ -199,7 +240,24 @@ input[type=reset]:hover {
     animation: soft-appear 1400ms ease-out;/* Randevu alma kutusunun açılış animasyonu */
 }
 
-.home-page .appointment-box:hover {/* Randevu alma kutusunun üzerine gelindiğinde uygulanacak stil */
+.home-page .home-action-link {
+    display: block;
+    width: 100%;
+    padding: 14px 18px;
+    border: 1px solid rgba(255, 255, 255, 0.35);
+    border-radius: 12px;
+    background: rgba(249, 255, 244, 0.86);
+    color: #15324a;
+    font-size: 16px;
+    font-weight: 700;
+    text-align: center;
+    text-decoration: none;
+    backdrop-filter: blur(4px);
+    -webkit-backdrop-filter: blur(4px);
+}
+
+.home-page .appointment-box:hover,
+.home-page .home-action-link:hover {/* Ana sayfa bağlantılarının üzerine gelindiğinde uygulanacak stil */
     transform: translateY(-2px);
     box-shadow: 0 24px 52px rgba(0, 0, 0, 0.3);
 }
@@ -415,4 +473,3 @@ input[type=reset]:hover {
         grid-template-columns: repeat(3, minmax(56px, 1fr));
     }
 }
-
