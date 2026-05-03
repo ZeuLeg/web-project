@@ -1,6 +1,6 @@
-const express = require('express');
-const { Pool } = require('pg');
-const cors = require('cors');
+import express, { json } from 'express';
+import { Pool } from 'pg';
+import cors from 'cors';
 
 const app = express();
 const port = process.env.PORT || 3000;
@@ -11,7 +11,7 @@ app.use(cors({
   credentials: true
 }));
 
-app.use(express.json());
+app.use(json());
 
 // 2. Veritabanı Bağlantısı
 const pool = new Pool({
