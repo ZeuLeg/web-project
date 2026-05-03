@@ -17,7 +17,7 @@
       </div>
     </section>
 
-    <form class="login-card">
+    <form id="registerForm" class="login-card">
       <h1>Kütüphane Kaydı</h1>
       <p class="subtitle">Yeni hesap oluşturmak için bilgilerini gir.</p>
 
@@ -68,6 +68,11 @@
         <input type="submit" value="Kayıt Ol" />
         <input type="reset" value="Temizle" />
       </div>
+      <p id="formMessage" class="form-message" aria-live="polite"></p>
+      <p class="auth-note">
+        Zaten hesabınız var mı? <a href="../pages/login.html">Giriş yapın</a>
+      </p>
     </form>
+    <script src="../js/register.js"></script>
   </body>
 </html>
