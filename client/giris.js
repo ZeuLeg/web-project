@@ -37,7 +37,7 @@ loginForm.addEventListener("submit", async (event) => {
 
         // Gerçek projede kullanıcı paneline/rezervasyon ekranına yönlendirilir.
         setTimeout(() => {
-            window.location.href = "index.html";
+            window.location.href = "masa-secim.html";
         }, 800);
     } catch {
         showMessage("Sunucuya ulaşılamadı. Lütfen tekrar dene.", "error");
