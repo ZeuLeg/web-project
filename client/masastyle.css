@@ -100,6 +100,38 @@ body {
             color: #333;
         }
 
+        .floor-selector {
+            width: 100%;
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: center;
+            gap: 10px;
+            margin-top: 10px;
+        }
+
+        .floor-btn {
+            padding: 8px 14px;
+            border-radius: 999px;
+            border: 1px solid #c9d2dc;
+            background: #ffffff;
+            color: #2c3e50;
+            font-weight: 600;
+            cursor: pointer;
+            transition: 0.2s;
+        }
+
+        .floor-btn:hover {
+            border-color: #3498db;
+            color: #3498db;
+        }
+
+        .floor-btn.active {
+            background: #3498db;
+            border-color: #3498db;
+            color: #ffffff;
+            box-shadow: 0 6px 18px rgba(52, 152, 219, 0.3);
+        }
+
         .table-grid {
             width: 100%;
             display: grid;
@@ -243,5 +275,10 @@ body {
             .table-grid {
                 grid-template-columns: repeat(2, minmax(140px, 1fr));
                 gap: 14px;
+            }
+
+            .floor-btn {
+                flex: 1 1 calc(50% - 10px);
+                min-width: 120px;
             }
         }
