@@ -35,6 +35,7 @@ body {
     .home-page {
         justify-content: flex-start;
         gap: 16px;
+        // eslint-disable-next-line css/no-invalid-properties
         padding: 16px 16px calc(84px + env(safe-area-inset-bottom));
     }
 
