@@ -17,11 +17,11 @@
     </section>
 
     <form class="login-card">
-      <h1>Kutuphane Kayiti</h1>
-      <p class="subtitle">Yeni hesap olustormak icin bilgilerini gir.</p>
+      <h1>Kütüphane Kaydı</h1>
+      <p class="subtitle">Yeni hesap oluşturmak için bilgilerini gir.</p>
 
       <div class="field">
-        <label for="tcId">TC Kimlik Numarasi</label>
+        <label for="tcId">TC Kimlik Numarası</label>
         <input
           type="text"
           id="tcId"
@@ -29,40 +29,43 @@
           placeholder="12345678901"
           pattern="^[0-9]{11}$"
           inputmode="numeric"
-          title="TC Kimlik tam olarak 11 haneli olmalidir."
+          title="TC Kimlik tam olarak 11 haneli olmalıdır."
           required
         />
       </div>
 
       <div class="field">
-        <label for="studentId">Ogrenci Kimlik ID</label>
+        <label for="studentId">Öğrenci Numarası</label>
         <input
           type="text"
           id="studentId"
           name="studentId"
-          placeholder="Ornek: 230709089"
-          pattern="^[0-9]{2}0709[0-9]{3}$"
+          placeholder="Örnek: 123456789"
+          pattern="^[0-9]{9}$"
+          minlength="9"
+          maxlength="9"
           inputmode="numeric"
-          title="Ilk 2 hane giris yili, sonra 0709 sabit, son 3 hane degisebilir. Ornek: 250709095"
+          title="Öğrenci numarası tam olarak 9 haneli olmalıdır."
           required
         />
       </div>
 
       <div class="field">
-        <label for="password">Sifre</label>
+        <label for="password">Şifre</label>
         <input
           type="password"
           id="password"
           name="password"
-          placeholder="Sifren gir"
-          pattern="^[a-zA-Z0-9]{6,}$"
-          title="Sifre en az 6 karakter olmalidir. Harf ve rakam icermelidir."
+          placeholder="Şifreni gir"
+          minlength="8"
+          pattern="^(?=.*[A-Z]).{8,}$"
+          title="Şifre en az 8 karakter olmalı ve en az 1 büyük harf içermelidir."
           required
         />
       </div>
 
       <div class="button-row">
-        <input type="submit" value="Kayit Ol" />
+        <input type="submit" value="Kayıt Ol" />
         <input type="reset" value="Temizle" />
       </div>
     </form>
