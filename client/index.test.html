@@ -1,0 +1,72 @@
+<!-- client/index.html -->
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>AtaLibrary Sistem Testi</title>
+    <style>
+      body {
+        font-family: system-ui;
+        padding: 2rem;
+        background: #1a1a1a;
+        color: #fff;
+      }
+      .card {
+        background: #333;
+        padding: 1rem;
+        border-radius: 8px;
+        margin-top: 1rem;
+      }
+      #status {
+        color: #f39c12;
+        font-weight: bold;
+      }
+    </style>
+  </head>
+  <body>
+    <h1>AtaLibrary E2E Test Paneli</h1>
+    <p>Backend Durumu: <span id="status">Bağlanıyor...</span></p>
+
+    <div class="card">
+      <h3>Veritabanından Gelen Alanlar (Zones):</h3>
+      <ul id="zone-list"></ul>
+    </div>
+
+    <script>
+      // Backend'in yayın yaptığı alt alan adı
+      const API_URL = "https://api.zeuleg.dev/api/health";
+
+      async function testConnection() {
+        const statusEl = document.getElementById("status");
+        const listEl = document.getElementById("zone-list");
+
+        try {
+          const response = await fetch(API_URL);
+          const data = await response.json();
+
+          if (response.ok) {
+            statusEl.textContent = "BAĞLANDI! ✅";
+            statusEl.style.color = "#2ecc71";
+
+            // Gelen veriyi listeye yazdır
+            data.zones.forEach((zone) => {
+              const li = document.createElement("li");
+              li.textContent = zone.name;
+              listEl.appendChild(li);
+            });
+          } else {
+            throw new Error(data.message);
+          }
+        } catch (error) {
+          statusEl.textContent = "BAĞLANTI HATASI ❌";
+          statusEl.style.color = "#e74c3c";
+          console.error(error);
+        }
+      }
+
+      // Sayfa yüklendiğinde testi başlat
+      window.onload = testConnection;
+    </script>
+  </body>
+</html>

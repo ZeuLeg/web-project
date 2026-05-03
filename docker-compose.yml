@@ -1,0 +1,56 @@
+services:
+  api-server:
+    build:
+      context: ./server
+    container_name: library_api
+    restart: unless-stopped
+    ports:
+      - "3000:3000"
+    environment:
+      - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@postgres-db:5432/${DB_NAME}
+      - PORT=3000
+    depends_on:
+      - postgres-db
+    deploy:
+      resources:
+        limits:
+          cpus: "1.5"
+          memory: "1.5G"
+    logging:
+      driver: "json-file"
+      options:
+        max-size: "10m"
+        max-file: "3"
+
+  postgres-db:
+    image: postgres:18-alpine
+    container_name: library_db
+    restart: unless-stopped
+    ports:
+      - "127.0.0.1:5432:5432"
+    environment:
+      POSTGRES_USER: ${DB_USER}
+      POSTGRES_PASSWORD: ${DB_PASS}
+      POSTGRES_DB: ${DB_NAME}
+    volumes:
+      - /mnt/data/postgres/library_db:/var/lib/postgresql
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
+    deploy:
+      resources:
+        limits:
+          cpus: "1.0"
+          memory: "1G"
+  frontend-server:
+    image: nginx:alpine
+    container_name: library_frontend
+    restart: unless-stopped
+    ports:
+      - "8081:80"
+    volumes:
+      # Client klasöründeki dosyaları, Nginx'in yayın klasörüne "Read Only" olarak kopyalar
+      - ./client:/usr/share/nginx/html:ro
+    deploy:
+      resources:
+        limits:
+          cpus: "0.5"
+          memory: "256M"

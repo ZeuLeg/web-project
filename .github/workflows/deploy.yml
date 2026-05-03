@@ -1,0 +1,29 @@
+name: Pochita CD (Continuous Deployment)
+
+on:
+  push:
+    branches: ["main"]
+
+jobs:
+  deploy:
+    runs-on: self-hosted
+
+    steps:
+      - name: Kodu Güncelle (Checkout)
+        uses: actions/checkout@v6
+
+      - name: .env Dosyasını Dinamik Üret
+        run: |
+          echo "DB_USER=${{ secrets.DB_USER }}" >> .env
+          echo "DB_PASS=${{ secrets.DB_PASS }}" >> .env
+          echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
+          echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
+          echo "PORT=3000" >> .env
+
+      - name: Docker Konteynerlerini Yeniden İnşa Et
+        run: |
+          docker compose down
+          docker compose up -d --build
+
+      - name: Temizlik
+        run: docker image prune -f
