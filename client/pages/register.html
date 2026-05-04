@@ -27,7 +27,7 @@
           type="text"
           id="tcId"
           name="tcId"
-          placeholder="12345678901"
+          placeholder=""
           pattern="^[0-9]{11}$"
           inputmode="numeric"
           title="TC Kimlik tam olarak 11 haneli olmalıdır."
@@ -56,10 +56,10 @@
           type="password"
           id="password"
           name="password"
-          placeholder="Şifreni gir"
+          placeholder=""
           minlength="8"
           pattern="^(?=.*[A-Z]).{8,}$"
-          title="Şifre en az 8 karakter olmalı ve en az 1 büyük harf içermelidir."
+          title="Şifre en az 8 karakter olmalı ve en az 1 büyük harf içermelidir.(Şifreniz argon2Id ile güvenle saklanır)."
           required
         />
       </div>

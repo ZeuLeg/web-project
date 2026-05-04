@@ -38,7 +38,7 @@ form.addEventListener("submit", async (event) => {
     }
 
     setMessage(data.message || "Giriş başarılı.", "success");
-    window.location.href = "../pages/desk-selection.html";
+    window.location.href = "../index.html";
   } catch (error) {
     setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
   } finally {
