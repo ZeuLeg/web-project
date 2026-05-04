@@ -36,6 +36,21 @@
             Durum: <span id="desk-status">Lütfen boş bir koltuk seçin</span>
           </p>
         </div>
+        <!-- Saat Seçme Ekranı Başlangıcı -->
+        <div class="time-picker-section">
+          <h4 class="time-picker-title">Randevu Saati Seçin</h4>
+          <div class="time-inputs">
+            <div class="time-group">
+              <label for="start-time">Başlangıç:</label>
+              <input type="time" id="start-time" class="time-input" required>
+            </div>
+            <div class="time-group">
+              <label for="end-time">Bitiş:</label>
+              <input type="time" id="end-time" class="time-input" required>
+            </div>
+          </div>
+        </div>
+        <!-- Saat Seçme Ekranı Bitişi -->
         <button id="submit-btn" class="confirm-btn" type="button" disabled>
           Randevuyu Onayla
         </button>

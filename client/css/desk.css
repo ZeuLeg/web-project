@@ -287,3 +287,53 @@ body {
     min-width: 120px;
   }
 }
+
+/* Saat Seçme Bölümü */
+.time-picker-section {
+  margin-top: 15px;
+  margin-bottom: 20px;
+  padding-top: 15px;
+  border-top: 1px solid #e0e0e0; /* Üstteki durum kısmından ayırmak için ince çizgi */
+}
+
+.time-picker-title {
+  font-size: 15px;
+  font-weight: 600;
+  color: #333;
+  margin-bottom: 12px;
+  margin-top: 0;
+}
+
+.time-inputs {
+  display: flex;
+  gap: 15px; /* İki saat kutusu arasına boşluk bırakır */
+}
+
+.time-group {
+  flex: 1; /* Kutuların yan yana eşit genişlikte durmasını sağlar */
+  display: flex;
+  flex-direction: column;
+}
+
+.time-group label {
+  font-size: 13px;
+  color: #666;
+  margin-bottom: 5px;
+  font-weight: 500;
+}
+
+.time-input {
+  padding: 8px 12px;
+  border: 1px solid #ccc;
+  border-radius: 6px; /* Panelin genelindeki oval hatlara uyum sağlar */
+  font-size: 14px;
+  font-family: inherit;
+  outline: none;
+  transition: border-color 0.2s ease-in-out;
+}
+
+/* Kutuya tıklandığında onay butonuyla aynı yeşil tonda parlaması için */
+.time-input:focus {
+  border-color: #28a745;
+  box-shadow: 0 0 0 2px rgba(40, 167, 69, 0.2);
+}

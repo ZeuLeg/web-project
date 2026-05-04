@@ -186,7 +186,7 @@ input[type="reset"]:hover {
   filter: brightness(0.97);
   transform: translateY(-1px);
 }
-
+/* Animasyonlar */
 @keyframes rise {
   from {
     opacity: 0;
@@ -197,7 +197,7 @@ input[type="reset"]:hover {
     transform: translateY(0);
   }
 }
-
+/* Arka plan slayt gösterisi animasyonu */
 @keyframes auth-fade {
   0% {
     opacity: 0;
@@ -220,7 +220,7 @@ input[type="reset"]:hover {
     transform: scale(1);
   }
 }
-
+/* Responsive tasarım için medya sorguları */
 @media (max-width: 520px) {
   .login-card {
     width: min(100%, 430px);

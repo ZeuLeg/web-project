@@ -22,6 +22,16 @@ body {
   color: #99ccff !important;
 }
 
+/* İletişim linki şikayet linkiyle aynı görünsün */
+.contact-link {
+  color: #4da6ff !important;
+  transition: color 0.3s ease;
+}
+
+.contact-link:hover {
+  color: #99ccff !important;
+}
+
 .announcement-bar {
   background: rgba(0, 0, 0, 0.72);
   border-bottom: 1px solid rgba(255, 255, 255, 0.08);
