@@ -38,7 +38,8 @@ form.addEventListener("submit", async (event) => {
     }
 
     setMessage(data.message || "Giriş başarılı.", "success");
-    window.location.href = "../index.html";
+    localStorage.setItem("studentId", form.elements.studentId.value.trim());
+    window.location.href = "https://library.zeuleg.dev/index.html";
   } catch (error) {
     setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
   } finally {

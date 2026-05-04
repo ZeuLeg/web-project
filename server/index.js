@@ -44,6 +44,31 @@ async function initializeDatabase() {
     ON users (tc_id)
     WHERE tc_id IS NOT NULL
   `);
+
+  await pool.query(`
+    ALTER TABLE reservations
+    ADD COLUMN IF NOT EXISTS seat_number INT
+  `);
+
+  await pool.query(`
+    ALTER TABLE reservations
+    ADD COLUMN IF NOT EXISTS created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+  `);
+
+  await pool.query(`
+    INSERT INTO zones (name)
+    VALUES ('1. Kat'), ('2. Kat'), ('3. Kat')
+    ON CONFLICT DO NOTHING
+  `);
+
+  await pool.query(`
+    INSERT INTO desks (zone_id, desk_number)
+    SELECT zones.id, desk_numbers.desk_number
+    FROM zones
+    CROSS JOIN generate_series(1, 15) AS desk_numbers(desk_number)
+    WHERE zones.name IN ('1. Kat', '2. Kat', '3. Kat')
+    ON CONFLICT DO NOTHING
+  `);
 }
 
 async function hashPassword(password) {
@@ -70,10 +95,10 @@ async function verifyUserPassword(user, password) {
   }
 
   if (user.password === password || user.password_hash === password) {
-    await pool.query(
-      "UPDATE users SET password_hash = $1 WHERE id = $2",
-      [await hashPassword(password), user.id],
-    );
+    await pool.query("UPDATE users SET password_hash = $1 WHERE id = $2", [
+      await hashPassword(password),
+      user.id,
+    ]);
     return true;
   }
 
@@ -91,6 +116,18 @@ function isValidStudentId(studentId) {
 
 function isValidPassword(password) {
   return /^(?=.*[A-Z]).{8,}$/.test(password);
+}
+
+function isValidFloor(floor) {
+  return Number.isInteger(floor) && floor >= 1 && floor <= 3;
+}
+
+function isValidDeskNumber(deskNumber) {
+  return Number.isInteger(deskNumber) && deskNumber >= 1 && deskNumber <= 15;
+}
+
+function isValidSeatNumber(seatNumber) {
+  return Number.isInteger(seatNumber) && seatNumber >= 1 && seatNumber <= 4;
 }
 
 // 5. API Endpoints (Rotalar)
@@ -179,6 +216,170 @@ app.post("/api/login", async (req, res) => {
     res.status(200).json({ message: "Giriş başarılı. Hoş geldin!" });
   } catch (error) {
     console.error("Veritabanı Hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.post("/api/reservations", async (req, res) => {
+  const studentId = req.body.studentId?.trim();
+  const floor = Number(req.body.floor);
+  const deskNumber = Number(req.body.deskNumber);
+  const seatNumber = Number(req.body.seatNumber);
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
+  }
+
+  if (
+    !isValidFloor(floor) ||
+    !isValidDeskNumber(deskNumber) ||
+    !isValidSeatNumber(seatNumber)
+  ) {
+    return res.status(400).json({ message: "Randevu bilgileri geçersiz." });
+  }
+
+  try {
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE student_id = $1",
+      [studentId],
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı." });
+    }
+
+    const deskResult = await pool.query(
+      `
+        SELECT desks.id
+        FROM desks
+        INNER JOIN zones ON zones.id = desks.zone_id
+        WHERE zones.name = $1 AND desks.desk_number = $2
+      `,
+      [`${floor}. Kat`, deskNumber],
+    );
+
+    if (deskResult.rows.length === 0) {
+      return res.status(404).json({ message: "Masa bulunamadı." });
+    }
+
+    const userId = userResult.rows[0].id;
+    const deskId = deskResult.rows[0].id;
+
+    const activeUserReservation = await pool.query(
+      "SELECT id FROM reservations WHERE user_id = $1 AND status = 'active' LIMIT 1",
+      [userId],
+    );
+
+    if (activeUserReservation.rows.length > 0) {
+      return res.status(409).json({
+        message:
+          "Zaten aktif bir randevun var. Önce mevcut randevunu iptal et.",
+      });
+    }
+
+    const activeSeatReservation = await pool.query(
+      "SELECT id FROM reservations WHERE desk_id = $1 AND seat_number = $2 AND status = 'active' LIMIT 1",
+      [deskId, seatNumber],
+    );
+
+    if (activeSeatReservation.rows.length > 0) {
+      return res.status(409).json({ message: "Bu koltuk şu anda dolu." });
+    }
+
+    const reservationResult = await pool.query(
+      `
+        INSERT INTO reservations (user_id, desk_id, seat_number, start_time, end_time)
+        VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '2 hours')
+        RETURNING id, start_time, end_time, status
+      `,
+      [userId, deskId, seatNumber],
+    );
+
+    res.status(201).json({
+      message: "Randevu başarıyla kaydedildi.",
+      reservation: reservationResult.rows[0],
+    });
+  } catch (error) {
+    console.error("Randevu kayıt hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.get("/api/reservations", async (req, res) => {
+  const studentId = req.query.studentId?.trim();
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+        SELECT
+          reservations.id,
+          reservations.seat_number,
+          reservations.start_time,
+          reservations.end_time,
+          reservations.status,
+          zones.name AS floor,
+          desks.desk_number
+        FROM reservations
+        INNER JOIN users ON users.id = reservations.user_id
+        INNER JOIN desks ON desks.id = reservations.desk_id
+        INNER JOIN zones ON zones.id = desks.zone_id
+        WHERE users.student_id = $1
+        ORDER BY reservations.created_at DESC, reservations.start_time DESC
+      `,
+      [studentId],
+    );
+
+    res.status(200).json({ reservations: result.rows });
+  } catch (error) {
+    console.error("Randevu listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.delete("/api/reservations/:id", async (req, res) => {
+  const studentId = req.body.studentId?.trim();
+  const { id } = req.params;
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+        UPDATE reservations
+        SET status = 'cancelled'
+        FROM users
+        WHERE reservations.id = $1
+          AND reservations.user_id = users.id
+          AND users.student_id = $2
+          AND reservations.status = 'active'
+        RETURNING reservations.id
+      `,
+      [id, studentId],
+    );
+
+    if (result.rows.length === 0) {
+      return res
+        .status(404)
+        .json({
+          message: "Aktif randevu bulunamadı veya zaten iptal edilmiş.",
+        });
+    }
+
+    res.status(200).json({ message: "Randevu iptal edildi." });
+  } catch (error) {
+    console.error("Randevu iptal hatası:", error);
     res.status(500).json({ message: "Sunucu hatası oluştu." });
   }
 });

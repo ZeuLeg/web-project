@@ -1,0 +1,157 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Randevularım</title>
+
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/global.css" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+      <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="../index.html">Kütüphane</a>
+      </div>
+    </nav>
+
+    <main class="reservations-page">
+      <section class="reservations-shell">
+        <div class="reservations-header">
+          <h1>Randevularım</h1>
+          <a class="btn btn-randevu text-white" href="../index.html"
+            >Ana Sayfa</a
+          >
+        </div>
+
+        <p id="reservationMessage" class="reservation-message">
+          Randevular yükleniyor...
+        </p>
+        <div id="reservationList" class="reservation-list"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container fw-bold">TÜM HAKLAR SAKLIDIR | ZEDAKY</div>
+    </footer>
+
+    <script>
+      const studentId = localStorage.getItem("studentId");
+      const reservationList = document.getElementById("reservationList");
+      const reservationMessage = document.getElementById("reservationMessage");
+
+      function formatDate(value) {
+        return new Intl.DateTimeFormat("tr-TR", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date(value));
+      }
+
+      function setMessage(text) {
+        reservationMessage.textContent = text;
+        reservationMessage.style.display = text ? "block" : "none";
+      }
+
+      async function loadReservations() {
+        if (!studentId) {
+          setMessage("Randevularını görmek için önce giriş yapmalısın.");
+          return;
+        }
+
+        try {
+          const response = await fetch(
+            `/api/reservations?studentId=${encodeURIComponent(studentId)}`,
+          );
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            setMessage(data.message || "Randevular yüklenemedi.");
+            return;
+          }
+
+          renderReservations(data.reservations || []);
+        } catch (error) {
+          setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+        }
+      }
+
+      function renderReservations(reservations) {
+        reservationList.innerHTML = "";
+
+        if (reservations.length === 0) {
+          setMessage("Henüz randevun yok.");
+          return;
+        }
+
+        setMessage("");
+
+        reservations.forEach((reservation) => {
+          const card = document.createElement("article");
+          card.className = "reservation-card";
+
+          const statusText =
+            reservation.status === "active" ? "Aktif" : "İptal edildi";
+          const canCancel = reservation.status === "active";
+
+          card.innerHTML = `
+            <div>
+              <strong>${reservation.floor} - M-${reservation.desk_number}, Koltuk ${reservation.seat_number}</strong>
+              <p>Başlangıç: ${formatDate(reservation.start_time)}</p>
+              <p>Bitiş: ${formatDate(reservation.end_time)}</p>
+              <span class="reservation-status ${canCancel ? "" : "cancelled"}">${statusText}</span>
+            </div>
+          `;
+
+          if (canCancel) {
+            const cancelButton = document.createElement("button");
+            cancelButton.className = "cancel-reservation-btn";
+            cancelButton.type = "button";
+            cancelButton.textContent = "İptal Et";
+            cancelButton.addEventListener("click", () =>
+              cancelReservation(reservation.id, cancelButton),
+            );
+            card.appendChild(cancelButton);
+          }
+
+          reservationList.appendChild(card);
+        });
+      }
+
+      async function cancelReservation(reservationId, button) {
+        button.disabled = true;
+        button.textContent = "İptal ediliyor...";
+
+        try {
+          const response = await fetch(`/api/reservations/${reservationId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ studentId }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            setMessage(data.message || "Randevu iptal edilemedi.");
+            button.disabled = false;
+            button.textContent = "İptal Et";
+            return;
+          }
+
+          setMessage(data.message || "Randevu iptal edildi.");
+          await loadReservations();
+        } catch (error) {
+          setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+          button.disabled = false;
+          button.textContent = "İptal Et";
+        }
+      }
+
+      loadReservations();
+    </script>
+  </body>
+</html>

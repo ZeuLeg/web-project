@@ -48,6 +48,9 @@
       const submitBtn = document.getElementById("submit-btn");
       const deskStatusText = document.getElementById("desk-status");
       const tableGrid = document.getElementById("table-grid");
+      const floorNumber = 3;
+      let selectedTableNo = null;
+      let selectedSeatNo = null;
 
       function renderTablesForKat3() {
         tableGrid.innerHTML = "";
@@ -65,16 +68,11 @@
             const seat = document.createElement("div");
             seat.className = "seat seat-" + seatNo;
 
-            if ((tableNo + seatNo + 2) % 3 === 0 && seatNo !== 4) {
-              seat.classList.add("occupied");
-              seat.innerText = seatNo + " - Dolu";
-            } else {
-              seat.classList.add("available");
-              seat.innerText = seatNo + " - Boş";
-              seat.addEventListener("click", () =>
-                selectSeat(tableNo, seatNo, seat),
-              );
-            }
+            seat.classList.add("available");
+            seat.innerText = seatNo + " - Boş";
+            seat.addEventListener("click", () =>
+              selectSeat(tableNo, seatNo, seat),
+            );
 
             wrapper.appendChild(seat);
           }
@@ -86,6 +84,8 @@
       function selectSeat(tableNo, seatNumber, seatElement) {
         clearActiveSeats();
         seatElement.classList.add("active");
+        selectedTableNo = tableNo;
+        selectedSeatNo = seatNumber;
 
         deskNoText.innerText = "M-" + tableNo + " (Dörtlü Masa)";
         selectedSeatText.innerText = "Koltuk " + seatNumber;
@@ -101,6 +101,60 @@
         });
       }
 
+      async function confirmReservation() {
+        const studentId = localStorage.getItem("studentId");
+
+        if (!studentId) {
+          deskStatusText.innerText =
+            "Randevu almak için önce giriş yapmalısın.";
+          deskStatusText.style.color = "#e74c3c";
+          return;
+        }
+
+        if (!selectedTableNo || !selectedSeatNo) {
+          deskStatusText.innerText = "Lütfen önce bir koltuk seçin.";
+          deskStatusText.style.color = "#e74c3c";
+          return;
+        }
+
+        submitBtn.disabled = true;
+        deskStatusText.innerText = "Randevu kaydediliyor...";
+        deskStatusText.style.color = "#222";
+
+        try {
+          const response = await fetch("/api/reservations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              studentId,
+              floor: floorNumber,
+              deskNumber: selectedTableNo,
+              seatNumber: selectedSeatNo,
+            }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            deskStatusText.innerText = data.message || "Randevu kaydedilemedi.";
+            deskStatusText.style.color = "#e74c3c";
+            submitBtn.disabled = false;
+            return;
+          }
+
+          deskStatusText.innerText = data.message || "Randevu kaydedildi.";
+          deskStatusText.style.color = "#27ae60";
+          window.location.href = "../pages/reservations.html";
+        } catch (error) {
+          deskStatusText.innerText =
+            "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.";
+          deskStatusText.style.color = "#e74c3c";
+          submitBtn.disabled = false;
+        }
+      }
+
+      submitBtn.addEventListener("click", confirmReservation);
       renderTablesForKat3();
     </script>
   </body>

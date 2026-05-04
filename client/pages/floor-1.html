@@ -73,6 +73,9 @@
       const submitBtn = document.getElementById("submit-btn"); // Randevuyu onayla butonu
       const deskStatusText = document.getElementById("desk-status"); // Durum bilgisini gosteren span
       const tableGrid = document.getElementById("table-grid"); // Masa kutularinin cizilecegi ana grid
+      const floorNumber = 1;
+      let selectedTableNo = null;
+      let selectedSeatNo = null;
 
       function renderTablesForKat1() {
         // Kat 1 icin tum masa ve koltuklari ekrana cizer
@@ -93,17 +96,11 @@
             const seat = document.createElement("div"); // Koltuk div'i olusturur
             seat.className = "seat seat-" + seatNo; // Koltugu konumlandiran siniflari ekler
 
-            if ((tableNo + seatNo) % 3 === 0 && seatNo !== 4) {
-              // Ornek doluluk kurali: bazi koltuklar dolu
-              seat.classList.add("occupied"); // Dolu koltuk gorunumu verir
-              seat.innerText = seatNo + " - Dolu"; // Koltuk metnini dolu yapar
-            } else {
-              seat.classList.add("available"); // Bos koltuk gorunumu verir
-              seat.innerText = seatNo + " - Boş"; // Koltuk metnini bos yapar
-              seat.addEventListener("click", () =>
-                selectSeat(tableNo, seatNo, seat),
-              ); // Tiklaninca secim fonksiyonunu calistirir
-            }
+            seat.classList.add("available"); // Bos koltuk gorunumu verir
+            seat.innerText = seatNo + " - Boş"; // Koltuk metnini bos yapar
+            seat.addEventListener("click", () =>
+              selectSeat(tableNo, seatNo, seat),
+            ); // Tiklaninca secim fonksiyonunu calistirir
 
             wrapper.appendChild(seat); // Koltugu ilgili masaya ekler
           }
@@ -116,6 +113,8 @@
         // Kullanici bos koltuk sectiginde calisir
         clearActiveSeats(); // Daha once secilen koltuk vurgusunu temizler
         seatElement.classList.add("active"); // Yeni secilen koltugu vurgular
+        selectedTableNo = tableNo;
+        selectedSeatNo = seatNumber;
 
         deskNoText.innerText = "M-" + tableNo + " (Dörtlü Masa)"; // Secilen masa bilgisini yazar
         selectedSeatText.innerText = "Koltuk " + seatNumber; // Secilen koltuk bilgisini yazar
@@ -133,6 +132,60 @@
         });
       }
 
+      async function confirmReservation() {
+        const studentId = localStorage.getItem("studentId");
+
+        if (!studentId) {
+          deskStatusText.innerText =
+            "Randevu almak için önce giriş yapmalısın.";
+          deskStatusText.style.color = "#e74c3c";
+          return;
+        }
+
+        if (!selectedTableNo || !selectedSeatNo) {
+          deskStatusText.innerText = "Lütfen önce bir koltuk seçin.";
+          deskStatusText.style.color = "#e74c3c";
+          return;
+        }
+
+        submitBtn.disabled = true;
+        deskStatusText.innerText = "Randevu kaydediliyor...";
+        deskStatusText.style.color = "#222";
+
+        try {
+          const response = await fetch("/api/reservations", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              studentId,
+              floor: floorNumber,
+              deskNumber: selectedTableNo,
+              seatNumber: selectedSeatNo,
+            }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            deskStatusText.innerText = data.message || "Randevu kaydedilemedi.";
+            deskStatusText.style.color = "#e74c3c";
+            submitBtn.disabled = false;
+            return;
+          }
+
+          deskStatusText.innerText = data.message || "Randevu kaydedildi.";
+          deskStatusText.style.color = "#27ae60";
+          window.location.href = "../pages/reservations.html";
+        } catch (error) {
+          deskStatusText.innerText =
+            "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.";
+          deskStatusText.style.color = "#e74c3c";
+          submitBtn.disabled = false;
+        }
+      }
+
+      submitBtn.addEventListener("click", confirmReservation);
       renderTablesForKat1(); // Sayfa acildiginda Kat 1 masasini cizerek baslatir
     </script>
   </body>

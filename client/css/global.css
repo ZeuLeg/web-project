@@ -83,6 +83,14 @@ body {
   animation-play-state: paused;
 }
 
+.home-actions {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+}
+
 .btn-randevu {
   background: linear-gradient(45deg, #198754, #20c997);
   border: none;
@@ -100,6 +108,108 @@ body {
   transform: translateY(-3px);
   box-shadow: 0 6px 20px rgba(32, 201, 151, 0.6);
   color: white;
+}
+
+.btn-randevularim {
+  background: linear-gradient(45deg, #0d6efd, #4da6ff);
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.35);
+}
+
+.btn-randevularim:hover {
+  box-shadow: 0 6px 20px rgba(13, 110, 253, 0.55);
+}
+
+.reservations-page {
+  flex: 1;
+  padding: 36px 20px;
+}
+
+.reservations-shell {
+  width: min(960px, 100%);
+  margin: 0 auto;
+}
+
+.reservations-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  gap: 16px;
+  flex-wrap: wrap;
+  margin-bottom: 20px;
+}
+
+.reservations-header h1 {
+  margin: 0;
+  font-size: clamp(1.8rem, 5vw, 2.6rem);
+  font-weight: 800;
+}
+
+.reservation-list {
+  display: grid;
+  gap: 14px;
+}
+
+.reservation-card {
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  border-radius: 12px;
+  padding: 18px;
+  display: grid;
+  grid-template-columns: 1fr auto;
+  gap: 14px;
+  align-items: center;
+}
+
+.reservation-card p {
+  margin: 4px 0 0;
+  color: #d7e2ee;
+}
+
+.reservation-card strong {
+  font-size: 1.15rem;
+}
+
+.reservation-status {
+  display: inline-flex;
+  align-items: center;
+  border-radius: 999px;
+  padding: 5px 10px;
+  margin-top: 10px;
+  font-size: 0.85rem;
+  font-weight: 700;
+  background: rgba(25, 135, 84, 0.18);
+  color: #8df0bd;
+}
+
+.reservation-status.cancelled {
+  background: rgba(220, 53, 69, 0.18);
+  color: #ffadb7;
+}
+
+.empty-state,
+.reservation-message {
+  color: #d7e2ee;
+  background: rgba(255, 255, 255, 0.08);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  border-radius: 12px;
+  padding: 18px;
+}
+
+.cancel-reservation-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 800;
+  color: #ffffff;
+  background: #dc3545;
+  transition:
+    transform 0.2s ease,
+    background 0.2s ease;
+}
+
+.cancel-reservation-btn:hover {
+  background: #bb2d3b;
+  transform: translateY(-2px);
 }
 
 .footer {
@@ -158,5 +268,14 @@ body {
   .btn-randevu {
     padding: 12px 34px;
     font-size: 1.15rem;
+  }
+
+  .home-actions,
+  .reservation-card {
+    width: 100%;
+  }
+
+  .reservation-card {
+    grid-template-columns: 1fr;
   }
 }

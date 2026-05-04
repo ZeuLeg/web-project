@@ -32,11 +32,18 @@ CREATE TABLE IF NOT EXISTS reservations (
     id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
     user_id UUID REFERENCES users(id) ON DELETE CASCADE,
     desk_id INT REFERENCES desks(id) ON DELETE CASCADE,
+    seat_number INT,
     start_time TIMESTAMP WITH TIME ZONE NOT NULL,
     end_time TIMESTAMP WITH TIME ZONE NOT NULL,
-    status VARCHAR(20) DEFAULT 'active'
+    status VARCHAR(20) DEFAULT 'active',
+    created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
 -- Test için veri ekleme
-INSERT INTO zones (name) VALUES ('1. Kat'), ('2. Kat') ON CONFLICT DO NOTHING;
-INSERT INTO desks (zone_id, desk_number) VALUES (1, 1), (1, 2), (1, 3), (2, 1), (2, 2), (2, 3), (2, 4) ON CONFLICT DO NOTHING;
+INSERT INTO zones (name) VALUES ('1. Kat'), ('2. Kat'), ('3. Kat') ON CONFLICT DO NOTHING;
+INSERT INTO desks (zone_id, desk_number)
+SELECT zones.id, desk_numbers.desk_number
+FROM zones
+CROSS JOIN generate_series(1, 15) AS desk_numbers(desk_number)
+WHERE zones.name IN ('1. Kat', '2. Kat', '3. Kat')
+ON CONFLICT DO NOTHING;
