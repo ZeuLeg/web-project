@@ -205,13 +205,6 @@ body {
   background-color: rgba(255, 255, 255, 0.7);
 }
 
-.occupied {
-  background-color: rgba(231, 76, 60, 0.6);
-  color: white;
-  cursor: not-allowed;
-  border: 2px solid #c0392b;
-}
-
 .active {
   background-color: rgba(52, 152, 219, 0.4);
   border: 3px solid #3498db;

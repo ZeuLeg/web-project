@@ -37,9 +37,13 @@ form.addEventListener("submit", async (event) => {
       return;
     }
 
+    const studentId = form.elements.studentId.value.trim();
     setMessage(data.message || "Giriş başarılı.", "success");
-    localStorage.setItem("studentId", form.elements.studentId.value.trim());
-    window.location.href = "https://library.zeuleg.dev/index.html";
+    localStorage.setItem("studentId", studentId);
+    document.cookie = `studentId=${encodeURIComponent(
+      studentId,
+    )}; path=/; max-age=604800; SameSite=Lax`;
+    window.location.replace("https://library.zeuleg.dev/index.html");
   } catch (error) {
     setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
   } finally {

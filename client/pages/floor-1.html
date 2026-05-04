@@ -12,7 +12,7 @@
     <!-- Tarayici sekmesindeki ikon -->
     <title>Kat 1 - Masa Seçimi</title>
     <!-- Tarayici sekme basligi -->
-    <link rel="stylesheet" href="../css/desk.css" />
+    <link rel="stylesheet" href="../css/desk.css?v=20260504-appointments" />
     <!-- Bu sayfanin stil dosyasini baglar -->
   </head>
   <body>
@@ -59,7 +59,7 @@
           </p>
           <!-- Uygunluk durumu metni -->
         </div>
-        <button id="submit-btn" class="confirm-btn" disabled>
+        <button id="submit-btn" class="confirm-btn" type="button" disabled>
           Randevuyu Onayla
         </button>
         <!-- Koltuk secilene kadar pasif onay butonu -->
@@ -76,6 +76,22 @@
       const floorNumber = 1;
       let selectedTableNo = null;
       let selectedSeatNo = null;
+
+      function getSavedStudentId() {
+        const storedStudentId = localStorage.getItem("studentId");
+
+        if (storedStudentId) {
+          return storedStudentId;
+        }
+
+        const cookieStudentId = document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("studentId="));
+
+        return cookieStudentId
+          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
+          : "";
+      }
 
       function renderTablesForKat1() {
         // Kat 1 icin tum masa ve koltuklari ekrana cizer
@@ -133,7 +149,7 @@
       }
 
       async function confirmReservation() {
-        const studentId = localStorage.getItem("studentId");
+        const studentId = getSavedStudentId();
 
         if (!studentId) {
           deskStatusText.innerText =

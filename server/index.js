@@ -118,6 +118,25 @@ function isValidPassword(password) {
   return /^(?=.*[A-Z]).{8,}$/.test(password);
 }
 
+function getCookieValue(req, name) {
+  const cookies = req.headers.cookie?.split(";") || [];
+  const cookie = cookies.find((item) => item.trim().startsWith(`${name}=`));
+
+  if (!cookie) {
+    return "";
+  }
+
+  return decodeURIComponent(cookie.split("=").slice(1).join("="));
+}
+
+function getStudentIdFromRequest(req) {
+  return (
+    req.body?.studentId?.trim() ||
+    req.query?.studentId?.trim() ||
+    getCookieValue(req, "studentId").trim()
+  );
+}
+
 function isValidFloor(floor) {
   return Number.isInteger(floor) && floor >= 1 && floor <= 3;
 }
@@ -213,6 +232,12 @@ app.post("/api/login", async (req, res) => {
         .json({ message: "Öğrenci numarası veya şifre yanlış." });
     }
 
+    res.cookie("studentId", studentId, {
+      httpOnly: false,
+      maxAge: 7 * 24 * 60 * 60 * 1000,
+      sameSite: "lax",
+    });
+
     res.status(200).json({ message: "Giriş başarılı. Hoş geldin!" });
   } catch (error) {
     console.error("Veritabanı Hatası:", error);
@@ -221,7 +246,7 @@ app.post("/api/login", async (req, res) => {
 });
 
 app.post("/api/reservations", async (req, res) => {
-  const studentId = req.body.studentId?.trim();
+  const studentId = getStudentIdFromRequest(req);
   const floor = Number(req.body.floor);
   const deskNumber = Number(req.body.deskNumber);
   const seatNumber = Number(req.body.seatNumber);
@@ -308,7 +333,7 @@ app.post("/api/reservations", async (req, res) => {
 });
 
 app.get("/api/reservations", async (req, res) => {
-  const studentId = req.query.studentId?.trim();
+  const studentId = getStudentIdFromRequest(req);
 
   if (!studentId || !isValidStudentId(studentId)) {
     return res
@@ -345,7 +370,7 @@ app.get("/api/reservations", async (req, res) => {
 });
 
 app.delete("/api/reservations/:id", async (req, res) => {
-  const studentId = req.body.studentId?.trim();
+  const studentId = getStudentIdFromRequest(req);
   const { id } = req.params;
 
   if (!studentId || !isValidStudentId(studentId)) {
@@ -370,11 +395,9 @@ app.delete("/api/reservations/:id", async (req, res) => {
     );
 
     if (result.rows.length === 0) {
-      return res
-        .status(404)
-        .json({
-          message: "Aktif randevu bulunamadı veya zaten iptal edilmiş.",
-        });
+      return res.status(404).json({
+        message: "Aktif randevu bulunamadı veya zaten iptal edilmiş.",
+      });
     }
 
     res.status(200).json({ message: "Randevu iptal edildi." });

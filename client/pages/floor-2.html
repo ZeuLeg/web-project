@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
     <title>Kat 2 - Masa Seçimi</title>
-    <link rel="stylesheet" href="../css/desk.css" />
+    <link rel="stylesheet" href="../css/desk.css?v=20260504-appointments" />
   </head>
   <body>
     <div class="booking-container">
@@ -36,7 +36,7 @@
             Durum: <span id="desk-status">Lütfen boş bir koltuk seçin</span>
           </p>
         </div>
-        <button id="submit-btn" class="confirm-btn" disabled>
+        <button id="submit-btn" class="confirm-btn" type="button" disabled>
           Randevuyu Onayla
         </button>
       </div>
@@ -51,6 +51,22 @@
       const floorNumber = 2;
       let selectedTableNo = null;
       let selectedSeatNo = null;
+
+      function getSavedStudentId() {
+        const storedStudentId = localStorage.getItem("studentId");
+
+        if (storedStudentId) {
+          return storedStudentId;
+        }
+
+        const cookieStudentId = document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("studentId="));
+
+        return cookieStudentId
+          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
+          : "";
+      }
 
       function renderTablesForKat2() {
         tableGrid.innerHTML = "";
@@ -102,7 +118,7 @@
       }
 
       async function confirmReservation() {
-        const studentId = localStorage.getItem("studentId");
+        const studentId = getSavedStudentId();
 
         if (!studentId) {
           deskStatusText.innerText =
