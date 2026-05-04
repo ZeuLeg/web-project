@@ -1,0 +1,60 @@
+<!doctype html>
+<html>
+  <head>
+    <link rel="icon" href="resimler/favicon/favicon1.png" type="image/png" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <link rel="stylesheet" href="login.css" />
+  </head>
+  <body class="auth-page">
+    <section class="auth-bg-slider" aria-hidden="true">
+      <div class="auth-bg-track">
+        <img src="resimler/görsel1.jpg.jpeg" alt="" />
+        <img src="resimler/görsel2.jpg.jpeg" alt="" />
+        <img src="resimler/görsel3.jpg.jpeg" alt="" />
+        <img src="resimler/görsel4.jpg.jpeg" alt="" />
+      </div>
+    </section>
+
+    <form class="login-card">
+      <h1>Kutuphane Girisi</h1>
+      <p class="subtitle">Hesabina erismek icin bilgilerini gir.</p>
+
+      <div class="field">
+        <label for="studentId">Ogrenci Kimlik ID</label>
+        <input
+          type="text"
+          id="studentId"
+          name="studentId"
+          placeholder="Ornek: 230709074"
+          pattern="^[0-9]{2}0709[0-9]{3}$"
+          minlength="9"
+          maxlength="9"
+          inputmode="numeric"
+          title="Ilk 2 hane giris yili, sonra 0709 sabit, son 3 hane degisebilir. Ornek: 250709095"
+          required
+        />
+      </div>
+
+      <div class="field">
+        <label for="password">Sifre</label>
+        <input
+          type="password"
+          id="password"
+          name="password"
+          placeholder="Sifren gir"
+          minlength="6"
+          title="Sifre en az 6 karakter olmalidir."
+          required
+        />
+      </div>
+
+      <div class="button-row">
+        <input type="submit" value="Giris Yap" />
+        <input type="reset" value="Temizle" />
+      </div>
+      <p class="auth-note">
+        Hesabınız yok mu? <a href="kayıt.html">Kayıt olun</a>
+      </p>
+    </form>
+  </body>
+</html>
