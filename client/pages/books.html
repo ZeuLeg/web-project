@@ -67,7 +67,7 @@
               class="arama-input"
               placeholder="Kitap adı, yazar veya konu ara..."
             />
-            <button class="arama-buton">Ara</button>
+            <button class="arama-buton" type="button">Ara</button>
           </div>
 
           <div class="katalog-icerik">
@@ -111,7 +111,9 @@
                 >
               </div>
 
-              <button class="filtre-uygula">Filtreleri Uygula</button>
+              <button class="filtre-uygula" type="button">
+                Filtreleri Uygula
+              </button>
               <div
                 class="secim-alani"
                 style="
@@ -125,6 +127,7 @@
                 </p>
                 <button
                   class="kitap-al-btn"
+                  type="button"
                   style="
                     width: 100%;
                     padding: 10px;
@@ -142,6 +145,10 @@
                 >
                   Kitap Al
                 </button>
+                <p
+                  id="kitapMesaji"
+                  style="font-size: 13px; margin: 10px 0 0; color: #d7e2ee"
+                ></p>
               </div>
             </aside>
 
@@ -616,6 +623,17 @@
           : "";
       }
 
+      function setKitapMesaji(text, type = "") {
+        const message = document.getElementById("kitapMesaji");
+        message.textContent = text;
+        message.style.color =
+          type === "error"
+            ? "#ffb3b3"
+            : type === "success"
+              ? "#8df0bd"
+              : "#d7e2ee";
+      }
+
       function updateBookCard(book) {
         const kartlar = document.querySelectorAll(".kitap-kart");
         const kart = Array.from(kartlar).find((item) => {
@@ -654,7 +672,10 @@
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
-            alert(data.message || "Kitap durumları yüklenemedi.");
+            setKitapMesaji(
+              data.message || "Kitap durumları yüklenemedi.",
+              "error",
+            );
             return;
           }
 
@@ -662,7 +683,10 @@
           secimSayisiniGuncelle();
           araKitaplar();
         } catch (error) {
-          alert("Kitap durumları yüklenemedi. Lütfen tekrar deneyin.");
+          setKitapMesaji(
+            "Kitap durumları yüklenemedi. Yine de seçim yapabilirsin.",
+            "error",
+          );
         }
       }
 
@@ -753,6 +777,27 @@
 
           // Checkbox'u kartın başına ekle
           kart.insertBefore(checkbox, kart.firstChild);
+          kart.addEventListener("click", (event) => {
+            if (
+              event.target === checkbox ||
+              event.target.closest("button") ||
+              checkbox.disabled
+            ) {
+              return;
+            }
+
+            const secilenCheckbox = document.querySelectorAll(
+              ".kitap-checkbox:checked",
+            );
+
+            if (!checkbox.checked && secilenCheckbox.length >= 3) {
+              setKitapMesaji("En fazla 3 kitap seçebilirsin.", "error");
+              return;
+            }
+
+            checkbox.checked = !checkbox.checked;
+            secimSayisiniGuncelle();
+          });
         });
       }
 
@@ -772,25 +817,29 @@
         const bookIds = secilenler
           .map((checkbox) => Number(checkbox.dataset.bookId))
           .filter(Boolean);
+        const bookTitles = secilenler.map(
+          (checkbox) => checkbox.dataset.bookName,
+        );
 
         if (!studentId) {
-          alert("Kitap almak için önce giriş yapmalısın.");
+          setKitapMesaji("Kitap almak için önce giriş yapmalısın.", "error");
           return;
         }
 
-        if (bookIds.length === 0) {
-          alert("Lütfen en az bir kitap seçin.");
+        if (secilenler.length === 0) {
+          setKitapMesaji("Lütfen en az bir kitap seçin.", "error");
           return;
         }
 
-        if (bookIds.length > 3) {
-          alert("En fazla 3 kitap seçebilirsin.");
+        if (secilenler.length > 3) {
+          setKitapMesaji("En fazla 3 kitap seçebilirsin.", "error");
           return;
         }
 
         const button = document.querySelector(".kitap-al-btn");
         button.disabled = true;
         button.textContent = "Kaydediliyor...";
+        setKitapMesaji("Kitaplar kaydediliyor...");
 
         try {
           const response = await fetch("/api/book-loans", {
@@ -798,23 +847,32 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ studentId, bookIds }),
+            body: JSON.stringify({ studentId, bookIds, bookTitles }),
           });
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
-            alert(data.message || "Kitaplar kaydedilemedi.");
+            setKitapMesaji(data.message || "Kitaplar kaydedilemedi.", "error");
             button.disabled = false;
             button.textContent = "Kitap Al";
             return;
           }
 
-          alert(data.message || "Kitaplar başarıyla ödünç alındı.");
+          setKitapMesaji(
+            data.message || "Kitaplar başarıyla ödünç alındı.",
+            "success",
+          );
+          secilenler.forEach((checkbox) => {
+            checkbox.checked = false;
+          });
           await kitapDurumlariniYukle();
           button.disabled = false;
           button.textContent = "Kitap Al";
         } catch (error) {
-          alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+          setKitapMesaji(
+            "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.",
+            "error",
+          );
           button.disabled = false;
           button.textContent = "Kitap Al";
         }
@@ -829,7 +887,7 @@
 
           if (secilenCheckbox.length > 3) {
             e.target.checked = false;
-            alert("En fazla 3 kitap seçebilirsin.");
+            setKitapMesaji("En fazla 3 kitap seçebilirsin.", "error");
           }
 
           secimSayisiniGuncelle();

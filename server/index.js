@@ -629,7 +629,25 @@ app.get("/api/books", async (req, res) => {
 
 app.post("/api/book-loans", async (req, res) => {
   const studentId = getStudentIdFromRequest(req);
-  const bookIds = Array.isArray(req.body.bookIds) ? req.body.bookIds : [];
+  const bookIds = Array.isArray(req.body.bookIds)
+    ? [
+        ...new Set(
+          req.body.bookIds
+            .map(Number)
+            .filter((bookId) => Number.isInteger(bookId) && bookId > 0),
+        ),
+      ]
+    : [];
+  const bookTitles = Array.isArray(req.body.bookTitles)
+    ? [
+        ...new Set(
+          req.body.bookTitles
+            .map((title) => String(title).trim())
+            .filter(Boolean),
+        ),
+      ]
+    : [];
+  const selectedBookCount = bookTitles.length || bookIds.length;
 
   if (!studentId || !isValidStudentId(studentId)) {
     return res
@@ -637,7 +655,7 @@ app.post("/api/book-loans", async (req, res) => {
       .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
   }
 
-  if (bookIds.length === 0 || bookIds.length > 3) {
+  if (selectedBookCount === 0 || selectedBookCount > 3) {
     return res
       .status(400)
       .json({ message: "En az 1, en fazla 3 kitap seçebilirsin." });
@@ -655,14 +673,18 @@ app.post("/api/book-loans", async (req, res) => {
 
     const unavailableResult = await pool.query(
       `
-        SELECT books.title
-        FROM books
+        WITH selected_books AS (
+          SELECT id, title
+          FROM books
+          WHERE id = ANY($1::int[]) OR title = ANY($2::text[])
+        )
+        SELECT selected_books.title
+        FROM selected_books
         INNER JOIN book_loans
-          ON book_loans.book_id = books.id
+          ON book_loans.book_id = selected_books.id
           AND book_loans.status = 'active'
-        WHERE books.id = ANY($1::int[])
       `,
-      [bookIds],
+      [bookIds, bookTitles],
     );
 
     if (unavailableResult.rows.length > 0) {
@@ -673,16 +695,20 @@ app.post("/api/book-loans", async (req, res) => {
 
     const loanResult = await pool.query(
       `
+        WITH selected_books AS (
+          SELECT id
+          FROM books
+          WHERE id = ANY($2::int[]) OR title = ANY($3::text[])
+        )
         INSERT INTO book_loans (user_id, book_id)
-        SELECT $1, books.id
-        FROM books
-        WHERE books.id = ANY($2::int[])
+        SELECT $1, selected_books.id
+        FROM selected_books
         RETURNING id, book_id, borrowed_at, status
       `,
-      [userResult.rows[0].id, bookIds],
+      [userResult.rows[0].id, bookIds, bookTitles],
     );
 
-    if (loanResult.rows.length !== bookIds.length) {
+    if (loanResult.rows.length !== selectedBookCount) {
       return res
         .status(404)
         .json({ message: "Seçilen kitaplardan bazıları bulunamadı." });
@@ -693,6 +719,12 @@ app.post("/api/book-loans", async (req, res) => {
       loans: loanResult.rows,
     });
   } catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({
+        message: "Seçtiğin kitaplardan biri zaten ödünç alınmış.",
+      });
+    }
+
     console.error("Kitap alma hatası:", error);
     res.status(500).json({ message: "Sunucu hatası oluştu." });
   }
