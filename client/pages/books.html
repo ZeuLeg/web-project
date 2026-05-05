@@ -1,15 +1,18 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="tr">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
     <title>Kitaplar - Kütüphane</title>
     <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
-    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css" rel="stylesheet" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
     <link rel="stylesheet" href="../css/complaint.css" />
     <link rel="stylesheet" href="../css/book.css" />
-</head>
-<body>
+  </head>
+  <body>
     <nav class="navbar navbar-expand-lg navbar-dark py-3">
       <div class="container">
         <a class="navbar-brand fw-bold fs-4" href="../index.html"> Kütüphane</a>
@@ -49,7 +52,7 @@
       </div>
     </nav>
 
-    <main class="main-content container">
+    <div class="main-content container">
       <div class="glass-card">
         <h2 class="text-center mb-4 fw-bold">Kütüphane Katalog</h2>
         <p class="text-center text-light opacity-75 mb-4">
@@ -57,438 +60,489 @@
         </p>
 
         <div class="katalog-container">
-        <!-- Üst Kısım: Arama Çubuğu -->
-        <div class="arama-alani">
-            <input type="text" class="arama-input" placeholder="Kitap adı, yazar veya konu ara...">
+          <!-- Üst Kısım: Arama Çubuğu -->
+          <div class="arama-alani">
+            <input
+              type="text"
+              class="arama-input"
+              placeholder="Kitap adı, yazar veya konu ara..."
+            />
             <button class="arama-buton">Ara</button>
-        </div>
+          </div>
 
-        <div class="katalog-icerik">
+          <div class="katalog-icerik">
             <!-- Sol Kısım: Filtreler -->
             <aside class="filtre-alani">
-                <h3>Filtrele</h3>
-                
-                <div class="filtre-grubu">
-                    <h4>Kategoriler</h4>
-                    <label><input type="checkbox" name="kategori" value="yazilim"> Yazılım & Algoritma</label>
-                    <label><input type="checkbox" name="kategori" value="siber"> Siber Güvenlik</label>
-                    <label><input type="checkbox" name="kategori" value="donanim"> Bilgisayar Donanımı</label>
-                    <label><input type="checkbox" name="kategori" value="edebiyat"> Roman & Edebiyat</label>
-                </div>
+              <h3>Filtrele</h3>
 
-                <div class="filtre-grubu">
-                    <h4>Durum</h4>
-                    <label><input type="radio" name="durum" value="hepsi" checked> Hepsi</label>
-                    <label><input type="radio" name="durum" value="uygun"> Rafta Uygun</label>
-                    <label><input type="radio" name="durum" value="dolu"> Ödünç Alınmış</label>
-                </div>
+              <div class="filtre-grubu">
+                <h4>Kategoriler</h4>
+                <label
+                  ><input type="checkbox" name="kategori" value="yazilim" />
+                  Yazılım & Algoritma</label
+                >
+                <label
+                  ><input type="checkbox" name="kategori" value="siber" /> Siber
+                  Güvenlik</label
+                >
+                <label
+                  ><input type="checkbox" name="kategori" value="donanim" />
+                  Bilgisayar Donanımı</label
+                >
+                <label
+                  ><input type="checkbox" name="kategori" value="edebiyat" />
+                  Roman & Edebiyat</label
+                >
+              </div>
 
-                <button class="filtre-uygula">Filtreleri Uygula</button>
-                <div class="secim-alani" style="margin-top: 20px; padding-top: 20px; border-top: 1px solid rgba(255,255,255,0.2);">
-                    <p style="font-size: 14px; color: #ccc; margin-bottom: 10px;">Seçili kitaplar: <span id="secim-sayisi">0</span>/3</p>
-                    <button class="kitap-al-btn" style="width: 100%; padding: 10px; background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; border: none; border-radius: 8px; font-weight: bold; cursor: pointer;">Kitap Al</button>
-                </div>
+              <div class="filtre-grubu">
+                <h4>Durum</h4>
+                <label
+                  ><input type="radio" name="durum" value="hepsi" checked />
+                  Hepsi</label
+                >
+                <label
+                  ><input type="radio" name="durum" value="uygun" /> Rafta
+                  Uygun</label
+                >
+                <label
+                  ><input type="radio" name="durum" value="dolu" /> Ödünç
+                  Alınmış</label
+                >
+              </div>
+
+              <button class="filtre-uygula">Filtreleri Uygula</button>
+              <div
+                class="secim-alani"
+                style="
+                  margin-top: 20px;
+                  padding-top: 20px;
+                  border-top: 1px solid rgba(255, 255, 255, 0.2);
+                "
+              >
+                <p style="font-size: 14px; color: #ccc; margin-bottom: 10px">
+                  Seçili kitaplar: <span id="secim-sayisi">0</span>/3
+                </p>
+                <button
+                  class="kitap-al-btn"
+                  style="
+                    width: 100%;
+                    padding: 10px;
+                    background: linear-gradient(
+                      135deg,
+                      #667eea 0%,
+                      #764ba2 100%
+                    );
+                    color: white;
+                    border: none;
+                    border-radius: 8px;
+                    font-weight: bold;
+                    cursor: pointer;
+                  "
+                >
+                  Kitap Al
+                </button>
+              </div>
             </aside>
 
             <!-- Sağ Kısım: Kitap Listesi -->
-            <main class="kitap-listesi">
-                
-                <!-- Dünya Klasikleri -->
-                <div class="kitap-kart">
-                    <!-- Kitap Görsel: 📖 emoji'si (3rem boyutunda) CSS'de görünüm ayarlanmıştır -->
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>1984</h4>
-                        <p class="yazar">George Orwell</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+            <section class="kitap-listesi">
+              <!-- Dünya Klasikleri -->
+              <div class="kitap-kart">
+                <!-- Kitap Görsel: 📖 emoji'si (3rem boyutunda) CSS'de görünüm ayarlanmıştır -->
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>1984</h4>
+                  <p class="yazar">George Orwell</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Savaş ve Barış</h4>
-                        <p class="yazar">Lev Tolstoy</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Savaş ve Barış</h4>
+                  <p class="yazar">Lev Tolstoy</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Suç ve Ceza</h4>
-                        <p class="yazar">Fyodor Dostoyevsky</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Suç ve Ceza</h4>
+                  <p class="yazar">Fyodor Dostoyevsky</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Gurur ve Önyargı</h4>
-                        <p class="yazar">Jane Austen</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Gurur ve Önyargı</h4>
+                  <p class="yazar">Jane Austen</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Büyük Umutlar</h4>
-                        <p class="yazar">Charles Dickens</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Büyük Umutlar</h4>
+                  <p class="yazar">Charles Dickens</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Jane Eyre</h4>
-                        <p class="yazar">Charlotte Brontë</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Jane Eyre</h4>
+                  <p class="yazar">Charlotte Brontë</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Wuthering Heights</h4>
-                        <p class="yazar">Emily Brontë</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Wuthering Heights</h4>
+                  <p class="yazar">Emily Brontë</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Dönüşüm</h4>
-                        <p class="yazar">Franz Kafka</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Dönüşüm</h4>
+                  <p class="yazar">Franz Kafka</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Karanlık Kalpler</h4>
-                        <p class="yazar">Joseph Conrad</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Karanlık Kalpler</h4>
+                  <p class="yazar">Joseph Conrad</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Çalışan Yükseklikleri</h4>
-                        <p class="yazar">Thomas Hardy</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Çalışan Yükseklikleri</h4>
+                  <p class="yazar">Thomas Hardy</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Oliver Twist</h4>
-                        <p class="yazar">Charles Dickens</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Oliver Twist</h4>
+                  <p class="yazar">Charles Dickens</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Bodrum Evi</h4>
-                        <p class="yazar">Anne Frank</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Bodrum Evi</h4>
+                  <p class="yazar">Anne Frank</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Kumarbaz</h4>
-                        <p class="yazar">Fyodor Dostoyevsky</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Kumarbaz</h4>
+                  <p class="yazar">Fyodor Dostoyevsky</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Madame Bovary</h4>
-                        <p class="yazar">Gustave Flaubert</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Madame Bovary</h4>
+                  <p class="yazar">Gustave Flaubert</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Les Misérables</h4>
-                        <p class="yazar">Victor Hugo</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Les Misérables</h4>
+                  <p class="yazar">Victor Hugo</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Üç Silahşörler</h4>
-                        <p class="yazar">Alexandre Dumas</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Üç Silahşörler</h4>
+                  <p class="yazar">Alexandre Dumas</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Pinocchio'nun Macaları</h4>
-                        <p class="yazar">Carlo Collodi</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Pinocchio'nun Macaları</h4>
+                  <p class="yazar">Carlo Collodi</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Faust</h4>
-                        <p class="yazar">Johann Wolfgang von Goethe</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Faust</h4>
+                  <p class="yazar">Johann Wolfgang von Goethe</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Don Quixote</h4>
-                        <p class="yazar">Miguel de Cervantes</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Don Quixote</h4>
+                  <p class="yazar">Miguel de Cervantes</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Uğultulu Tepeler</h4>
-                        <p class="yazar">Emily Brontë</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Uğultulu Tepeler</h4>
+                  <p class="yazar">Emily Brontë</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Köpek Kalbi</h4>
-                        <p class="yazar">Mikhail Bulgakov</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Köpek Kalbi</h4>
+                  <p class="yazar">Mikhail Bulgakov</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Anna Karenina</h4>
-                        <p class="yazar">Lev Tolstoy</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Anna Karenina</h4>
+                  <p class="yazar">Lev Tolstoy</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Hazine Adası</h4>
-                        <p class="yazar">Robert Louis Stevenson</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Hazine Adası</h4>
+                  <p class="yazar">Robert Louis Stevenson</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Gönül Savaşı</h4>
-                        <p class="yazar">Emily Dickinson</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Gönül Savaşı</h4>
+                  <p class="yazar">Emily Dickinson</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Usta ve Margarita</h4>
-                        <p class="yazar">Mikhail Bulgakov</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Usta ve Margarita</h4>
+                  <p class="yazar">Mikhail Bulgakov</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>İnsan Trol</h4>
-                        <p class="yazar">Henrik Ibsen</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>İnsan Trol</h4>
+                  <p class="yazar">Henrik Ibsen</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Kara Şövalye</h4>
-                        <p class="yazar">Walter Scott</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Kara Şövalye</h4>
+                  <p class="yazar">Walter Scott</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Portre'nin Gölgesi</h4>
-                        <p class="yazar">Oscar Wilde</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Portre'nin Gölgesi</h4>
+                  <p class="yazar">Oscar Wilde</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <!-- Siber Güvenlik Kitapları -->
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Kara Şapka</h4>
-                        <p class="yazar">Jeff Dieter</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <!-- Siber Güvenlik Kitapları -->
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Kara Şapka</h4>
+                  <p class="yazar">Jeff Dieter</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Şifreleme Temelleri</h4>
-                        <p class="yazar">David Kahn</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Şifreleme Temelleri</h4>
+                  <p class="yazar">David Kahn</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Ağ Saldırıları</h4>
-                        <p class="yazar">Laura Chappell</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Ağ Saldırıları</h4>
+                  <p class="yazar">Laura Chappell</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Siber Savunma</h4>
-                        <p class="yazar">Daniel Miessler</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Siber Savunma</h4>
+                  <p class="yazar">Daniel Miessler</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Etik Hackerlik</h4>
-                        <p class="yazar">Georgia Weidman</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Etik Hackerlik</h4>
+                  <p class="yazar">Georgia Weidman</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <!-- Bilgisayar Donanımı Kitapları -->
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Bilgisayar Mimarisi</h4>
-                        <p class="yazar">David Patterson</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <!-- Bilgisayar Donanımı Kitapları -->
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Bilgisayar Mimarisi</h4>
+                  <p class="yazar">David Patterson</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>CPU Tasarımı</h4>
-                        <p class="yazar">John Hennessy</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>CPU Tasarımı</h4>
+                  <p class="yazar">John Hennessy</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Bellek Yönetimi</h4>
-                        <p class="yazar">Randal Bryant</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Bellek Yönetimi</h4>
+                  <p class="yazar">Randal Bryant</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Veri Depolama</h4>
-                        <p class="yazar">Kai Hwang</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Veri Depolama</h4>
+                  <p class="yazar">Kai Hwang</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>İşlemci Teknolojisi</h4>
-                        <p class="yazar">Geoff Knottenbelt</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>İşlemci Teknolojisi</h4>
+                  <p class="yazar">Geoff Knottenbelt</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <!-- Yazılım & Algoritma Kitapları -->
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Veri Yapıları</h4>
-                        <p class="yazar">Mark Allen Weiss</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <!-- Yazılım & Algoritma Kitapları -->
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Veri Yapıları</h4>
+                  <p class="yazar">Mark Allen Weiss</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Algoritmaların Analizi</h4>
-                        <p class="yazar">Thomas Cormen</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Algoritmaların Analizi</h4>
+                  <p class="yazar">Thomas Cormen</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Temiz Kod</h4>
-                        <p class="yazar">Robert Martin</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Temiz Kod</h4>
+                  <p class="yazar">Robert Martin</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Tasarım Desenleri</h4>
-                        <p class="yazar">Gang of Four</p>
-                        <span class="etiket uygun">Rafta</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Tasarım Desenleri</h4>
+                  <p class="yazar">Gang of Four</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
+              </div>
 
-                <div class="kitap-kart">
-                    <div class="kitap-kapak">📖</div>
-                    <div class="kitap-detay">
-                        <h4>Yazılım Mimarisi</h4>
-                        <p class="yazar">Robert Martin</p>
-                        <span class="etiket dolu">Ödünç Alınmış</span>
-                    </div>
+              <div class="kitap-kart">
+                <div class="kitap-kapak">📖</div>
+                <div class="kitap-detay">
+                  <h4>Yazılım Mimarisi</h4>
+                  <p class="yazar">Robert Martin</p>
+                  <span class="etiket uygun">Rafta</span>
                 </div>
-
-            </main>
+              </div>
+            </section>
+          </div>
         </div>
       </div>
-    </main>
+    </div>
 
     <footer class="footer">
       <div class="container fw-bold">TÜM HAKLAR SAKLIDIR | ZEDAKY</div>
@@ -498,67 +552,140 @@
     <script>
       // Kitapları kategorilere göre etiketleme
       const kitaplar = {
-        "1984": { kategori: "edebiyat", durum: "uygun" },
+        1984: { kategori: "edebiyat", durum: "uygun" },
         "Savaş ve Barış": { kategori: "edebiyat", durum: "uygun" },
-        "Suç ve Ceza": { kategori: "felsefe", durum: "dolu" },
+        "Suç ve Ceza": { kategori: "felsefe", durum: "uygun" },
         "Gurur ve Önyargı": { kategori: "roman", durum: "uygun" },
-        "Büyük Umutlar": { kategori: "edebiyat", durum: "dolu" },
+        "Büyük Umutlar": { kategori: "edebiyat", durum: "uygun" },
         "Jane Eyre": { kategori: "roman", durum: "uygun" },
         "Wuthering Heights": { kategori: "drama", durum: "uygun" },
-        "Dönüşüm": { kategori: "felsefe", durum: "dolu" },
+        Dönüşüm: { kategori: "felsefe", durum: "uygun" },
         "Karanlık Kalpler": { kategori: "edebiyat", durum: "uygun" },
         "Çalışan Yükseklikleri": { kategori: "drama", durum: "uygun" },
-        "Oliver Twist": { kategori: "edebiyat", durum: "dolu" },
+        "Oliver Twist": { kategori: "edebiyat", durum: "uygun" },
         "Bodrum Evi": { kategori: "edebiyat", durum: "uygun" },
-        "Kumarbaz": { kategori: "felsefe", durum: "uygun" },
-        "Madame Bovary": { kategori: "roman", durum: "dolu" },
+        Kumarbaz: { kategori: "felsefe", durum: "uygun" },
+        "Madame Bovary": { kategori: "roman", durum: "uygun" },
         "Les Misérables": { kategori: "drama", durum: "uygun" },
         "Üç Silahşörler": { kategori: "edebiyat", durum: "uygun" },
-        "Pinocchio'nun Macaları": { kategori: "edebiyat", durum: "dolu" },
-        "Faust": { kategori: "felsefe", durum: "uygun" },
+        "Pinocchio'nun Macaları": { kategori: "edebiyat", durum: "uygun" },
+        Faust: { kategori: "felsefe", durum: "uygun" },
         "Don Quixote": { kategori: "edebiyat", durum: "uygun" },
-        "Uğultulu Tepeler": { kategori: "drama", durum: "dolu" },
+        "Uğultulu Tepeler": { kategori: "drama", durum: "uygun" },
         "Köpek Kalbi": { kategori: "felsefe", durum: "uygun" },
         "Anna Karenina": { kategori: "roman", durum: "uygun" },
-        "Hazine Adası": { kategori: "edebiyat", durum: "dolu" },
+        "Hazine Adası": { kategori: "edebiyat", durum: "uygun" },
         "Gönül Savaşı": { kategori: "roman", durum: "uygun" },
         "Usta ve Margarita": { kategori: "felsefe", durum: "uygun" },
-        "İnsan Trol": { kategori: "drama", durum: "dolu" },
+        "İnsan Trol": { kategori: "drama", durum: "uygun" },
         "Kara Şövalye": { kategori: "edebiyat", durum: "uygun" },
         "Portre'nin Gölgesi": { kategori: "roman", durum: "uygun" },
         // Siber Güvenlik Kitapları
         "Kara Şapka": { kategori: "siber", durum: "uygun" },
-        "Şifreleme Temelleri": { kategori: "siber", durum: "dolu" },
+        "Şifreleme Temelleri": { kategori: "siber", durum: "uygun" },
         "Ağ Saldırıları": { kategori: "siber", durum: "uygun" },
         "Siber Savunma": { kategori: "siber", durum: "uygun" },
-        "Etik Hackerlik": { kategori: "siber", durum: "dolu" },
+        "Etik Hackerlik": { kategori: "siber", durum: "uygun" },
         // Bilgisayar Donanımı Kitapları
         "Bilgisayar Mimarisi": { kategori: "donanim", durum: "uygun" },
-        "CPU Tasarımı": { kategori: "donanim", durum: "dolu" },
+        "CPU Tasarımı": { kategori: "donanim", durum: "uygun" },
         "Bellek Yönetimi": { kategori: "donanim", durum: "uygun" },
         "Veri Depolama": { kategori: "donanim", durum: "uygun" },
-        "İşlemci Teknolojisi": { kategori: "donanim", durum: "dolu" },
+        "İşlemci Teknolojisi": { kategori: "donanim", durum: "uygun" },
         // Yazılım & Algoritma Kitapları
         "Veri Yapıları": { kategori: "yazilim", durum: "uygun" },
-        "Algoritmaların Analizi": { kategori: "yazilim", durum: "dolu" },
+        "Algoritmaların Analizi": { kategori: "yazilim", durum: "uygun" },
         "Temiz Kod": { kategori: "yazilim", durum: "uygun" },
         "Tasarım Desenleri": { kategori: "yazilim", durum: "uygun" },
-        "Yazılım Mimarisi": { kategori: "yazilim", durum: "dolu" }
+        "Yazılım Mimarisi": { kategori: "yazilim", durum: "uygun" },
       };
+
+      function getSavedStudentId() {
+        const storedStudentId = localStorage.getItem("studentId");
+
+        if (storedStudentId) {
+          return storedStudentId;
+        }
+
+        const cookieStudentId = document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("studentId="));
+
+        return cookieStudentId
+          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
+          : "";
+      }
+
+      function updateBookCard(book) {
+        const kartlar = document.querySelectorAll(".kitap-kart");
+        const kart = Array.from(kartlar).find((item) => {
+          return item.querySelector("h4")?.textContent.trim() === book.title;
+        });
+
+        if (!kart) return;
+
+        const etiket = kart.querySelector(".etiket");
+        const checkbox = kart.querySelector(".kitap-checkbox");
+
+        kitaplar[book.title] = {
+          kategori: book.category,
+          durum: book.status,
+          id: book.id,
+        };
+
+        if (etiket) {
+          etiket.className = `etiket ${book.status}`;
+          etiket.textContent =
+            book.status === "dolu" ? "Ödünç Alınmış" : "Rafta";
+        }
+
+        if (checkbox) {
+          checkbox.dataset.bookId = book.id;
+          checkbox.disabled = book.status === "dolu";
+          if (checkbox.disabled) {
+            checkbox.checked = false;
+          }
+        }
+      }
+
+      async function kitapDurumlariniYukle() {
+        try {
+          const response = await fetch("/api/books");
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            alert(data.message || "Kitap durumları yüklenemedi.");
+            return;
+          }
+
+          (data.books || []).forEach(updateBookCard);
+          secimSayisiniGuncelle();
+          araKitaplar();
+        } catch (error) {
+          alert("Kitap durumları yüklenemedi. Lütfen tekrar deneyin.");
+        }
+      }
 
       // Arama fonksiyonu
       function araKitaplar() {
-        const aramaMetni = document.querySelector('.arama-input').value.toLowerCase().trim();
-        const kategoriler = Array.from(document.querySelectorAll('input[name="kategori"]:checked')).map(el => el.value);
-        const durum = document.querySelector('input[name="durum"]:checked').value;
-        const kartlar = document.querySelectorAll('.kitap-kart');
+        const aramaMetni = document
+          .querySelector(".arama-input")
+          .value.toLowerCase()
+          .trim();
+        const kategoriler = Array.from(
+          document.querySelectorAll('input[name="kategori"]:checked'),
+        ).map((el) => el.value);
+        const durum = document.querySelector(
+          'input[name="durum"]:checked',
+        ).value;
+        const kartlar = document.querySelectorAll(".kitap-kart");
 
-        kartlar.forEach(kart => {
-          const baslikEl = kart.querySelector('h4');
+        kartlar.forEach((kart) => {
+          const baslikEl = kart.querySelector("h4");
           const baslik = baslikEl.textContent.trim();
-          const yazarEl = kart.querySelector('.yazar');
-          const yazar = yazarEl ? yazarEl.textContent.trim() : '';
-          
+          const yazarEl = kart.querySelector(".yazar");
+          const yazar = yazarEl ? yazarEl.textContent.trim() : "";
+
           const kitapBilgi = kitaplar[baslik];
           if (!kitapBilgi) return;
 
@@ -566,70 +693,155 @@
           const kitapKategori = kitapBilgi.kategori;
 
           // Arama kontrolü - başlık veya yazarda ara
-          const aramaUygun = aramaMetni === '' || 
-                            baslik.toLowerCase().includes(aramaMetni) || 
-                            yazar.toLowerCase().includes(aramaMetni);
+          const aramaUygun =
+            aramaMetni === "" ||
+            baslik.toLowerCase().includes(aramaMetni) ||
+            yazar.toLowerCase().includes(aramaMetni);
 
           // Durum kontrolü
-          const durumUygun = durum === 'hepsi' || durum === kitapDurum;
-          
+          const durumUygun = durum === "hepsi" || durum === kitapDurum;
+
           // Kategori kontrolü - eğer kategori seçiliyse kontrol et
-          const kategoriUygun = kategoriler.length === 0 || kategoriler.includes(kitapKategori);
+          const kategoriUygun =
+            kategoriler.length === 0 || kategoriler.includes(kitapKategori);
 
           if (aramaUygun && durumUygun && kategoriUygun) {
-            kart.style.display = 'flex';
+            kart.style.display = "flex";
           } else {
-            kart.style.display = 'none';
+            kart.style.display = "none";
           }
         });
       }
 
       // Arama butonuna tıklama olayı
-      document.querySelector('.arama-buton').addEventListener('click', araKitaplar);
+      document
+        .querySelector(".arama-buton")
+        .addEventListener("click", araKitaplar);
 
       // Enter tuşuyla da arama yap
-      document.querySelector('.arama-input').addEventListener('keypress', function(e) {
-        if (e.key === 'Enter') {
-          araKitaplar();
-        }
-      });
+      document
+        .querySelector(".arama-input")
+        .addEventListener("keypress", function (e) {
+          if (e.key === "Enter") {
+            araKitaplar();
+          }
+        });
 
       // Filtre butonuna tıklama olayı
-      document.querySelector('.filtre-uygula').addEventListener('click', araKitaplar);
+      document
+        .querySelector(".filtre-uygula")
+        .addEventListener("click", araKitaplar);
 
       // Başlangıçta tüm kitapları göster
       araKitaplar();
 
       // Checkbox'ları kitap kartlarına ekle
       function checkboxEkle() {
-        const kitapKartlari = document.querySelectorAll('.kitap-kart');
-        kitapKartlari.forEach(kart => {
+        const kitapKartlari = document.querySelectorAll(".kitap-kart");
+        kitapKartlari.forEach((kart) => {
           // Eğer checkbox zaten varsa, ekleme
-          if (kart.querySelector('.kitap-checkbox')) return;
-          
-          const kitapAdi = kart.querySelector('h4').textContent.trim();
-          const checkbox = document.createElement('input');
-          checkbox.type = 'checkbox';
-          checkbox.className = 'kitap-checkbox';
+          if (kart.querySelector(".kitap-checkbox")) return;
+
+          const kitapAdi = kart.querySelector("h4").textContent.trim();
+          const checkbox = document.createElement("input");
+          checkbox.type = "checkbox";
+          checkbox.className = "kitap-checkbox";
           checkbox.dataset.bookName = kitapAdi;
-          checkbox.style.cssText = 'margin-right: 10px; cursor: pointer; width: 18px; height: 18px;';
-          
+          checkbox.dataset.bookId = kitaplar[kitapAdi]?.id || "";
+          checkbox.style.cssText =
+            "margin-right: 10px; cursor: pointer; width: 18px; height: 18px;";
+
           // Checkbox'u kartın başına ekle
           kart.insertBefore(checkbox, kart.firstChild);
         });
       }
 
+      function secimSayisiniGuncelle() {
+        const secilenCheckbox = document.querySelectorAll(
+          ".kitap-checkbox:checked",
+        );
+        document.getElementById("secim-sayisi").textContent =
+          secilenCheckbox.length;
+      }
+
+      async function kitapAl() {
+        const studentId = getSavedStudentId();
+        const secilenler = Array.from(
+          document.querySelectorAll(".kitap-checkbox:checked"),
+        );
+        const bookIds = secilenler
+          .map((checkbox) => Number(checkbox.dataset.bookId))
+          .filter(Boolean);
+
+        if (!studentId) {
+          alert("Kitap almak için önce giriş yapmalısın.");
+          return;
+        }
+
+        if (bookIds.length === 0) {
+          alert("Lütfen en az bir kitap seçin.");
+          return;
+        }
+
+        if (bookIds.length > 3) {
+          alert("En fazla 3 kitap seçebilirsin.");
+          return;
+        }
+
+        const button = document.querySelector(".kitap-al-btn");
+        button.disabled = true;
+        button.textContent = "Kaydediliyor...";
+
+        try {
+          const response = await fetch("/api/book-loans", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ studentId, bookIds }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            alert(data.message || "Kitaplar kaydedilemedi.");
+            button.disabled = false;
+            button.textContent = "Kitap Al";
+            return;
+          }
+
+          alert(data.message || "Kitaplar başarıyla ödünç alındı.");
+          await kitapDurumlariniYukle();
+          button.disabled = false;
+          button.textContent = "Kitap Al";
+        } catch (error) {
+          alert("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+          button.disabled = false;
+          button.textContent = "Kitap Al";
+        }
+      }
+
       // Checkbox change event'ini dinle - seçim sayısını güncelle
-      document.addEventListener('change', function(e) {
-        if (e.target.classList.contains('kitap-checkbox')) {
-          const secilenCheckbox = document.querySelectorAll('.kitap-checkbox:checked');
-          document.getElementById('secim-sayisi').textContent = secilenCheckbox.length;
+      document.addEventListener("change", function (e) {
+        if (e.target.classList.contains("kitap-checkbox")) {
+          const secilenCheckbox = document.querySelectorAll(
+            ".kitap-checkbox:checked",
+          );
+
+          if (secilenCheckbox.length > 3) {
+            e.target.checked = false;
+            alert("En fazla 3 kitap seçebilirsin.");
+          }
+
+          secimSayisiniGuncelle();
         }
       });
 
-      // Sayfa yüklendiğinde checkbox'ları ekle
-      window.addEventListener('load', checkboxEkle);
+      document
+        .querySelector(".kitap-al-btn")
+        .addEventListener("click", kitapAl);
+
       checkboxEkle();
+      kitapDurumlariniYukle();
     </script>
-</body>
+  </body>
 </html>

@@ -111,7 +111,11 @@
           card.className = "reservation-card";
 
           const statusText =
-            reservation.status === "active" ? "Aktif" : "İptal edildi";
+            reservation.status === "active"
+              ? "Aktif"
+              : reservation.status === "completed"
+                ? "Süresi doldu"
+                : "İptal edildi";
           const canCancel = reservation.status === "active";
 
           card.innerHTML = `

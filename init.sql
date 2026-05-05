@@ -39,6 +39,28 @@ CREATE TABLE IF NOT EXISTS reservations (
     created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
 );
 
+-- 6. Kitaplar
+CREATE TABLE IF NOT EXISTS books (
+    id SERIAL PRIMARY KEY,
+    title VARCHAR(150) UNIQUE NOT NULL,
+    author VARCHAR(150) NOT NULL,
+    category VARCHAR(50) NOT NULL
+);
+
+-- 7. Kitap Odunc Kayitlari
+CREATE TABLE IF NOT EXISTS book_loans (
+    id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+    user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+    book_id INT REFERENCES books(id) ON DELETE CASCADE,
+    borrowed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+    returned_at TIMESTAMP WITH TIME ZONE,
+    status VARCHAR(20) DEFAULT 'active'
+);
+
+CREATE UNIQUE INDEX IF NOT EXISTS book_loans_one_active_per_book
+ON book_loans (book_id)
+WHERE status = 'active';
+
 -- Test için veri ekleme
 INSERT INTO zones (name) VALUES ('1. Kat'), ('2. Kat'), ('3. Kat') ON CONFLICT DO NOTHING;
 INSERT INTO desks (zone_id, desk_number)
@@ -47,3 +69,52 @@ FROM zones
 CROSS JOIN generate_series(1, 15) AS desk_numbers(desk_number)
 WHERE zones.name IN ('1. Kat', '2. Kat', '3. Kat')
 ON CONFLICT DO NOTHING;
+
+INSERT INTO books (title, author, category)
+VALUES
+    ('1984', 'George Orwell', 'edebiyat'),
+    ('Savaş ve Barış', 'Lev Tolstoy', 'edebiyat'),
+    ('Suç ve Ceza', 'Fyodor Dostoyevsky', 'edebiyat'),
+    ('Gurur ve Önyargı', 'Jane Austen', 'edebiyat'),
+    ('Büyük Umutlar', 'Charles Dickens', 'edebiyat'),
+    ('Jane Eyre', 'Charlotte Brontë', 'edebiyat'),
+    ('Wuthering Heights', 'Emily Brontë', 'edebiyat'),
+    ('Dönüşüm', 'Franz Kafka', 'edebiyat'),
+    ('Karanlık Kalpler', 'Joseph Conrad', 'edebiyat'),
+    ('Çalışan Yükseklikleri', 'Thomas Hardy', 'edebiyat'),
+    ('Oliver Twist', 'Charles Dickens', 'edebiyat'),
+    ('Bodrum Evi', 'Anne Frank', 'edebiyat'),
+    ('Kumarbaz', 'Fyodor Dostoyevsky', 'edebiyat'),
+    ('Madame Bovary', 'Gustave Flaubert', 'edebiyat'),
+    ('Les Misérables', 'Victor Hugo', 'edebiyat'),
+    ('Üç Silahşörler', 'Alexandre Dumas', 'edebiyat'),
+    ('Pinocchio''nun Macaları', 'Carlo Collodi', 'edebiyat'),
+    ('Faust', 'Johann Wolfgang von Goethe', 'edebiyat'),
+    ('Don Quixote', 'Miguel de Cervantes', 'edebiyat'),
+    ('Uğultulu Tepeler', 'Emily Brontë', 'edebiyat'),
+    ('Köpek Kalbi', 'Mikhail Bulgakov', 'edebiyat'),
+    ('Anna Karenina', 'Lev Tolstoy', 'edebiyat'),
+    ('Hazine Adası', 'Robert Louis Stevenson', 'edebiyat'),
+    ('Gönül Savaşı', 'Emily Dickinson', 'edebiyat'),
+    ('Usta ve Margarita', 'Mikhail Bulgakov', 'edebiyat'),
+    ('İnsan Trol', 'Henrik Ibsen', 'edebiyat'),
+    ('Kara Şövalye', 'Walter Scott', 'edebiyat'),
+    ('Portre''nin Gölgesi', 'Oscar Wilde', 'edebiyat'),
+    ('Kara Şapka', 'Jeff Dieter', 'siber'),
+    ('Şifreleme Temelleri', 'David Kahn', 'siber'),
+    ('Ağ Saldırıları', 'Laura Chappell', 'siber'),
+    ('Siber Savunma', 'Daniel Miessler', 'siber'),
+    ('Etik Hackerlik', 'Georgia Weidman', 'siber'),
+    ('Bilgisayar Mimarisi', 'David Patterson', 'donanim'),
+    ('CPU Tasarımı', 'John Hennessy', 'donanim'),
+    ('Bellek Yönetimi', 'Randal Bryant', 'donanim'),
+    ('Veri Depolama', 'Kai Hwang', 'donanim'),
+    ('İşlemci Teknolojisi', 'Geoff Knottenbelt', 'donanim'),
+    ('Veri Yapıları', 'Mark Allen Weiss', 'yazilim'),
+    ('Algoritmaların Analizi', 'Thomas Cormen', 'yazilim'),
+    ('Temiz Kod', 'Robert Martin', 'yazilim'),
+    ('Tasarım Desenleri', 'Gang of Four', 'yazilim'),
+    ('Yazılım Mimarisi', 'Robert Martin', 'yazilim')
+ON CONFLICT (title) DO UPDATE
+SET author = EXCLUDED.author,
+    category = EXCLUDED.category;

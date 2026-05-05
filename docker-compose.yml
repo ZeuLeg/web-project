@@ -33,7 +33,7 @@ services:
       POSTGRES_PASSWORD: ${DB_PASS}
       POSTGRES_DB: ${DB_NAME}
     volumes:
-      - /mnt/data/postgres/library_db:/var/lib/postgresql
+      - library_postgres_data:/var/lib/postgresql
       - ./init.sql:/docker-entrypoint-initdb.d/init.sql
     deploy:
       resources:
@@ -57,3 +57,6 @@ services:
         limits:
           cpus: "0.5"
           memory: "256M"
+
+volumes:
+  library_postgres_data:

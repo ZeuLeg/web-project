@@ -88,6 +88,8 @@
       const submitBtn = document.getElementById("submit-btn"); // Randevuyu onayla butonu
       const deskStatusText = document.getElementById("desk-status"); // Durum bilgisini gosteren span
       const tableGrid = document.getElementById("table-grid"); // Masa kutularinin cizilecegi ana grid
+      const startTimeInput = document.getElementById("start-time");
+      const endTimeInput = document.getElementById("end-time");
       const floorNumber = 1;
       let selectedTableNo = null;
       let selectedSeatNo = null;
@@ -108,7 +110,34 @@
           : "";
       }
 
-      function renderTablesForKat1() {
+      async function loadOccupiedSeatKeys() {
+        try {
+          const response = await fetch(
+            `/api/desks/availability?floor=${floorNumber}`,
+          );
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            deskStatusText.innerText =
+              data.message || "Koltuk durumları yüklenemedi.";
+            deskStatusText.style.color = "#e74c3c";
+            return new Set();
+          }
+
+          return new Set(
+            (data.occupiedSeats || []).map(
+              (seat) => `${seat.desk_number}-${seat.seat_number}`,
+            ),
+          );
+        } catch (error) {
+          deskStatusText.innerText =
+            "Koltuk durumları yüklenemedi. Lütfen tekrar deneyin.";
+          deskStatusText.style.color = "#e74c3c";
+          return new Set();
+        }
+      }
+
+      function renderTablesForKat1(occupiedSeatKeys = new Set()) {
         // Kat 1 icin tum masa ve koltuklari ekrana cizer
         tableGrid.innerHTML = ""; // Yeniden cizim oncesi eski icerigi temizler
 
@@ -127,11 +156,16 @@
             const seat = document.createElement("div"); // Koltuk div'i olusturur
             seat.className = "seat seat-" + seatNo; // Koltugu konumlandiran siniflari ekler
 
-            seat.classList.add("available"); // Bos koltuk gorunumu verir
-            seat.innerText = seatNo + " - Boş"; // Koltuk metnini bos yapar
-            seat.addEventListener("click", () =>
-              selectSeat(tableNo, seatNo, seat),
-            ); // Tiklaninca secim fonksiyonunu calistirir
+            if (occupiedSeatKeys.has(`${tableNo}-${seatNo}`)) {
+              seat.classList.add("occupied");
+              seat.innerText = seatNo + " - Dolu";
+            } else {
+              seat.classList.add("available"); // Bos koltuk gorunumu verir
+              seat.innerText = seatNo + " - Boş"; // Koltuk metnini bos yapar
+              seat.addEventListener("click", () =>
+                selectSeat(tableNo, seatNo, seat),
+              ); // Tiklaninca secim fonksiyonunu calistirir
+            }
 
             wrapper.appendChild(seat); // Koltugu ilgili masaya ekler
           }
@@ -179,6 +213,12 @@
           return;
         }
 
+        if (!startTimeInput.value || !endTimeInput.value) {
+          deskStatusText.innerText = "Lütfen başlangıç ve bitiş saati seçin.";
+          deskStatusText.style.color = "#e74c3c";
+          return;
+        }
+
         submitBtn.disabled = true;
         deskStatusText.innerText = "Randevu kaydediliyor...";
         deskStatusText.style.color = "#222";
@@ -194,6 +234,8 @@
               floor: floorNumber,
               deskNumber: selectedTableNo,
               seatNumber: selectedSeatNo,
+              startTime: startTimeInput.value,
+              endTime: endTimeInput.value,
             }),
           });
           const data = await response.json().catch(() => ({}));
@@ -217,7 +259,7 @@
       }
 
       submitBtn.addEventListener("click", confirmReservation);
-      renderTablesForKat1(); // Sayfa acildiginda Kat 1 masasini cizerek baslatir
+      loadOccupiedSeatKeys().then(renderTablesForKat1); // Sayfa acildiginda Kat 1 masasini cizerek baslatir
     </script>
   </body>
   <!-- Sayfa govdesinin sonu -->

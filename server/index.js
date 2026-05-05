@@ -29,6 +29,8 @@ app.use(express.json());
 app.use(express.static(CLIENT_DIR));
 
 async function initializeDatabase() {
+  await pool.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+
   await pool.query(`
     ALTER TABLE users
     ADD COLUMN IF NOT EXISTS tc_id VARCHAR(11)
@@ -68,6 +70,83 @@ async function initializeDatabase() {
     CROSS JOIN generate_series(1, 15) AS desk_numbers(desk_number)
     WHERE zones.name IN ('1. Kat', '2. Kat', '3. Kat')
     ON CONFLICT DO NOTHING
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS books (
+      id SERIAL PRIMARY KEY,
+      title VARCHAR(150) UNIQUE NOT NULL,
+      author VARCHAR(150) NOT NULL,
+      category VARCHAR(50) NOT NULL
+    )
+  `);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS book_loans (
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      user_id UUID REFERENCES users(id) ON DELETE CASCADE,
+      book_id INT REFERENCES books(id) ON DELETE CASCADE,
+      borrowed_at TIMESTAMP WITH TIME ZONE DEFAULT NOW(),
+      returned_at TIMESTAMP WITH TIME ZONE,
+      status VARCHAR(20) DEFAULT 'active'
+    )
+  `);
+
+  await pool.query(`
+    CREATE UNIQUE INDEX IF NOT EXISTS book_loans_one_active_per_book
+    ON book_loans (book_id)
+    WHERE status = 'active'
+  `);
+
+  await pool.query(`
+    INSERT INTO books (title, author, category)
+    VALUES
+      ('1984', 'George Orwell', 'edebiyat'),
+      ('Savaş ve Barış', 'Lev Tolstoy', 'edebiyat'),
+      ('Suç ve Ceza', 'Fyodor Dostoyevsky', 'edebiyat'),
+      ('Gurur ve Önyargı', 'Jane Austen', 'edebiyat'),
+      ('Büyük Umutlar', 'Charles Dickens', 'edebiyat'),
+      ('Jane Eyre', 'Charlotte Brontë', 'edebiyat'),
+      ('Wuthering Heights', 'Emily Brontë', 'edebiyat'),
+      ('Dönüşüm', 'Franz Kafka', 'edebiyat'),
+      ('Karanlık Kalpler', 'Joseph Conrad', 'edebiyat'),
+      ('Çalışan Yükseklikleri', 'Thomas Hardy', 'edebiyat'),
+      ('Oliver Twist', 'Charles Dickens', 'edebiyat'),
+      ('Bodrum Evi', 'Anne Frank', 'edebiyat'),
+      ('Kumarbaz', 'Fyodor Dostoyevsky', 'edebiyat'),
+      ('Madame Bovary', 'Gustave Flaubert', 'edebiyat'),
+      ('Les Misérables', 'Victor Hugo', 'edebiyat'),
+      ('Üç Silahşörler', 'Alexandre Dumas', 'edebiyat'),
+      ('Pinocchio''nun Macaları', 'Carlo Collodi', 'edebiyat'),
+      ('Faust', 'Johann Wolfgang von Goethe', 'edebiyat'),
+      ('Don Quixote', 'Miguel de Cervantes', 'edebiyat'),
+      ('Uğultulu Tepeler', 'Emily Brontë', 'edebiyat'),
+      ('Köpek Kalbi', 'Mikhail Bulgakov', 'edebiyat'),
+      ('Anna Karenina', 'Lev Tolstoy', 'edebiyat'),
+      ('Hazine Adası', 'Robert Louis Stevenson', 'edebiyat'),
+      ('Gönül Savaşı', 'Emily Dickinson', 'edebiyat'),
+      ('Usta ve Margarita', 'Mikhail Bulgakov', 'edebiyat'),
+      ('İnsan Trol', 'Henrik Ibsen', 'edebiyat'),
+      ('Kara Şövalye', 'Walter Scott', 'edebiyat'),
+      ('Portre''nin Gölgesi', 'Oscar Wilde', 'edebiyat'),
+      ('Kara Şapka', 'Jeff Dieter', 'siber'),
+      ('Şifreleme Temelleri', 'David Kahn', 'siber'),
+      ('Ağ Saldırıları', 'Laura Chappell', 'siber'),
+      ('Siber Savunma', 'Daniel Miessler', 'siber'),
+      ('Etik Hackerlik', 'Georgia Weidman', 'siber'),
+      ('Bilgisayar Mimarisi', 'David Patterson', 'donanim'),
+      ('CPU Tasarımı', 'John Hennessy', 'donanim'),
+      ('Bellek Yönetimi', 'Randal Bryant', 'donanim'),
+      ('Veri Depolama', 'Kai Hwang', 'donanim'),
+      ('İşlemci Teknolojisi', 'Geoff Knottenbelt', 'donanim'),
+      ('Veri Yapıları', 'Mark Allen Weiss', 'yazilim'),
+      ('Algoritmaların Analizi', 'Thomas Cormen', 'yazilim'),
+      ('Temiz Kod', 'Robert Martin', 'yazilim'),
+      ('Tasarım Desenleri', 'Gang of Four', 'yazilim'),
+      ('Yazılım Mimarisi', 'Robert Martin', 'yazilim')
+    ON CONFLICT (title) DO UPDATE
+    SET author = EXCLUDED.author,
+        category = EXCLUDED.category
   `);
 }
 
@@ -147,6 +226,48 @@ function isValidDeskNumber(deskNumber) {
 
 function isValidSeatNumber(seatNumber) {
   return Number.isInteger(seatNumber) && seatNumber >= 1 && seatNumber <= 4;
+}
+
+function isValidTimeValue(value) {
+  return typeof value === "string" && /^[0-9]{2}:[0-9]{2}$/.test(value);
+}
+
+async function expireFinishedReservations() {
+  await pool.query(`
+    UPDATE reservations
+    SET status = 'completed'
+    WHERE status = 'active' AND end_time <= NOW()
+  `);
+}
+
+async function getReservationTimes(req) {
+  if (
+    !isValidTimeValue(req.body.startTime) ||
+    !isValidTimeValue(req.body.endTime)
+  ) {
+    return null;
+  }
+
+  const result = await pool.query(
+    `
+      SELECT
+        (((NOW() AT TIME ZONE 'Europe/Istanbul')::date + $1::time) AT TIME ZONE 'Europe/Istanbul') AS start_time,
+        (((NOW() AT TIME ZONE 'Europe/Istanbul')::date + $2::time) AT TIME ZONE 'Europe/Istanbul') AS end_time
+    `,
+    [req.body.startTime, req.body.endTime],
+  );
+
+  const times = result.rows[0];
+
+  if (new Date(times.end_time) <= new Date(times.start_time)) {
+    return null;
+  }
+
+  if (new Date(times.end_time) <= new Date()) {
+    return null;
+  }
+
+  return times;
 }
 
 // 5. API Endpoints (Rotalar)
@@ -245,6 +366,18 @@ app.post("/api/login", async (req, res) => {
   }
 });
 
+app.post("/api/logout", (req, res) => {
+  res.clearCookie("studentId", {
+    path: "/",
+    sameSite: "lax",
+  });
+  res.clearCookie("studentId", {
+    path: "/api",
+    sameSite: "lax",
+  });
+  res.status(200).json({ message: "Çıkış yapıldı." });
+});
+
 app.post("/api/reservations", async (req, res) => {
   const studentId = getStudentIdFromRequest(req);
   const floor = Number(req.body.floor);
@@ -266,6 +399,16 @@ app.post("/api/reservations", async (req, res) => {
   }
 
   try {
+    await expireFinishedReservations();
+
+    const reservationTimes = await getReservationTimes(req);
+
+    if (!reservationTimes) {
+      return res
+        .status(400)
+        .json({ message: "Başlangıç ve bitiş saatleri geçerli olmalıdır." });
+    }
+
     const userResult = await pool.query(
       "SELECT id FROM users WHERE student_id = $1",
       [studentId],
@@ -293,7 +436,14 @@ app.post("/api/reservations", async (req, res) => {
     const deskId = deskResult.rows[0].id;
 
     const activeUserReservation = await pool.query(
-      "SELECT id FROM reservations WHERE user_id = $1 AND status = 'active' LIMIT 1",
+      `
+        SELECT id
+        FROM reservations
+        WHERE user_id = $1
+          AND status = 'active'
+          AND end_time > NOW()
+        LIMIT 1
+      `,
       [userId],
     );
 
@@ -305,7 +455,15 @@ app.post("/api/reservations", async (req, res) => {
     }
 
     const activeSeatReservation = await pool.query(
-      "SELECT id FROM reservations WHERE desk_id = $1 AND seat_number = $2 AND status = 'active' LIMIT 1",
+      `
+        SELECT id
+        FROM reservations
+        WHERE desk_id = $1
+          AND seat_number = $2
+          AND status = 'active'
+          AND end_time > NOW()
+        LIMIT 1
+      `,
       [deskId, seatNumber],
     );
 
@@ -316,10 +474,16 @@ app.post("/api/reservations", async (req, res) => {
     const reservationResult = await pool.query(
       `
         INSERT INTO reservations (user_id, desk_id, seat_number, start_time, end_time)
-        VALUES ($1, $2, $3, NOW(), NOW() + INTERVAL '2 hours')
+        VALUES ($1, $2, $3, $4, $5)
         RETURNING id, start_time, end_time, status
       `,
-      [userId, deskId, seatNumber],
+      [
+        userId,
+        deskId,
+        seatNumber,
+        reservationTimes.start_time,
+        reservationTimes.end_time,
+      ],
     );
 
     res.status(201).json({
@@ -342,6 +506,8 @@ app.get("/api/reservations", async (req, res) => {
   }
 
   try {
+    await expireFinishedReservations();
+
     const result = await pool.query(
       `
         SELECT
@@ -365,6 +531,37 @@ app.get("/api/reservations", async (req, res) => {
     res.status(200).json({ reservations: result.rows });
   } catch (error) {
     console.error("Randevu listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.get("/api/desks/availability", async (req, res) => {
+  const floor = Number(req.query.floor);
+
+  if (!isValidFloor(floor)) {
+    return res.status(400).json({ message: "Kat bilgisi geçersiz." });
+  }
+
+  try {
+    await expireFinishedReservations();
+
+    const result = await pool.query(
+      `
+        SELECT desks.desk_number, reservations.seat_number
+        FROM reservations
+        INNER JOIN desks ON desks.id = reservations.desk_id
+        INNER JOIN zones ON zones.id = desks.zone_id
+        WHERE zones.name = $1
+          AND reservations.status = 'active'
+          AND reservations.end_time > NOW()
+        ORDER BY desks.desk_number, reservations.seat_number
+      `,
+      [`${floor}. Kat`],
+    );
+
+    res.status(200).json({ occupiedSeats: result.rows });
+  } catch (error) {
+    console.error("Masa uygunluk hatası:", error);
     res.status(500).json({ message: "Sunucu hatası oluştu." });
   }
 });
@@ -407,9 +604,109 @@ app.delete("/api/reservations/:id", async (req, res) => {
   }
 });
 
+app.get("/api/books", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        books.id,
+        books.title,
+        books.author,
+        books.category,
+        CASE WHEN book_loans.id IS NULL THEN 'uygun' ELSE 'dolu' END AS status
+      FROM books
+      LEFT JOIN book_loans
+        ON book_loans.book_id = books.id
+        AND book_loans.status = 'active'
+      ORDER BY books.id
+    `);
+
+    res.status(200).json({ books: result.rows });
+  } catch (error) {
+    console.error("Kitap listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.post("/api/book-loans", async (req, res) => {
+  const studentId = getStudentIdFromRequest(req);
+  const bookIds = Array.isArray(req.body.bookIds) ? req.body.bookIds : [];
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
+  }
+
+  if (bookIds.length === 0 || bookIds.length > 3) {
+    return res
+      .status(400)
+      .json({ message: "En az 1, en fazla 3 kitap seçebilirsin." });
+  }
+
+  try {
+    const userResult = await pool.query(
+      "SELECT id FROM users WHERE student_id = $1",
+      [studentId],
+    );
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı." });
+    }
+
+    const unavailableResult = await pool.query(
+      `
+        SELECT books.title
+        FROM books
+        INNER JOIN book_loans
+          ON book_loans.book_id = books.id
+          AND book_loans.status = 'active'
+        WHERE books.id = ANY($1::int[])
+      `,
+      [bookIds],
+    );
+
+    if (unavailableResult.rows.length > 0) {
+      return res.status(409).json({
+        message: "Seçtiğin kitaplardan biri zaten ödünç alınmış.",
+      });
+    }
+
+    const loanResult = await pool.query(
+      `
+        INSERT INTO book_loans (user_id, book_id)
+        SELECT $1, books.id
+        FROM books
+        WHERE books.id = ANY($2::int[])
+        RETURNING id, book_id, borrowed_at, status
+      `,
+      [userResult.rows[0].id, bookIds],
+    );
+
+    if (loanResult.rows.length !== bookIds.length) {
+      return res
+        .status(404)
+        .json({ message: "Seçilen kitaplardan bazıları bulunamadı." });
+    }
+
+    res.status(201).json({
+      message: "Kitaplar başarıyla ödünç alındı.",
+      loans: loanResult.rows,
+    });
+  } catch (error) {
+    console.error("Kitap alma hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
 // 6. Sunucuyu Ayağa Kaldırma
 initializeDatabase()
   .then(() => {
+    setInterval(() => {
+      expireFinishedReservations().catch((error) => {
+        console.error("Süresi biten randevu temizleme hatası:", error);
+      });
+    }, 60 * 1000);
+
     app.listen(PORT, () => {
       console.log(`Express sunucusu çalışıyor: http://localhost:${PORT}`);
     });
