@@ -1,0 +1,73 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- NOT: Aşağıdaki meta robots etiketi, sayfanın Google ve diğer arama motorları tarafından dizine eklenmesini ve linklerin takip edilmesini engeller. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin — Üyeler</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>📚 Kütüphane Admin</h2>
+      <ul>
+        <li><a href="./admin-dashboard.html">📊 Dashboard (Özet)</a></li>
+        <li><a href="./admin-books.html">📖 Kitapları Yönet</a></li>
+        <li class="active"><a href="./admin-members.html">👥 Üyeler</a></li>
+        <li><a href="./admin-loans.html">🔄 Ödünç İşlemleri</a></li>
+        <li><a href="./admin-settings.html">⚙️ Ayarlar</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="header">
+        <div class="search-bar">
+          <input type="text" placeholder="Üye ara..." />
+        </div>
+        <div class="profile-area">
+          <span>👤 Admin</span><button class="logout-btn">Çıkış</button>
+        </div>
+      </div>
+
+      <main class="panel-container">
+        <div class="panel-header">
+          <h2>Üye Listesi</h2>
+          <button class="btn-add">+ Yeni Üye Kaydet</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>Üye No</th>
+              <th>Ad Soyad</th>
+              <th>Telefon</th>
+              <th>Kayıt Tarihi</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>#1001</td>
+              <td>Ahmet Yılmaz</td>
+              <td>0555 123 4567</td>
+              <td>12 Ocak 2024</td>
+              <td><span class="status status-aktif">Aktif</span></td>
+              <td><button class="btn btn-edit">Profil</button></td>
+            </tr>
+            <tr>
+              <td>#1002</td>
+              <td>Ayşe Demir</td>
+              <td>0532 987 6543</td>
+              <td>05 Mart 2024</td>
+              <td><span class="status status-aktif">Aktif</span></td>
+              <td><button class="btn btn-edit">Profil</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </body>
+  <script src="../js/admin-sidebar.js" defer></script>
+</html>

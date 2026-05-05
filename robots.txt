@@ -1,0 +1,13 @@
+# robots.txt — ZeuLeg Library
+# Bu dosya arama motorlarına hangi dizinlerin taranmayacağını söyler.
+# Admin sayfalarını dizine eklenmemesi için engelliyoruz.
+
+User-agent: *
+Disallow: /client/pages/admin-dashboard.html
+Disallow: /client/pages/admin-books.html
+Disallow: /client/pages/admin-members.html
+Disallow: /client/pages/admin-loans.html
+Disallow: /client/pages/admin-settings.html
+Disallow: /admin
+
+Allow: /

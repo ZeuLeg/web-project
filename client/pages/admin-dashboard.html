@@ -1,0 +1,68 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- NOT: Aşağıdaki meta robots etiketi, sayfanın Google ve diğer arama motorları tarafından dizine eklenmesini ve linklerin takip edilmesini engeller. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin — Dashboard</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>📚 Kütüphane Admin</h2>
+      <ul>
+        <li class="active">
+          <a href="./admin-dashboard.html">📊 Dashboard (Özet)</a>
+        </li>
+        <li><a href="./admin-books.html">📖 Kitapları Yönet</a></li>
+        <li><a href="./admin-members.html">👥 Üyeler</a></li>
+        <li><a href="./admin-loans.html">🔄 Ödünç İşlemleri</a></li>
+        <li><a href="./admin-settings.html">⚙️ Ayarlar</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="header">
+        <div class="search-bar">
+          <input type="text" placeholder="Arama yapın..." />
+        </div>
+        <div class="profile-area">
+          <span>👤 Admin Kullanıcısı</span
+          ><button class="logout-btn">Çıkış Yap</button>
+        </div>
+      </div>
+
+      <main class="panel-container">
+        <h2>Dashboard</h2>
+        <div class="cards" style="margin-top: 18px">
+          <div class="card">
+            <h3>Toplam Kitap</h3>
+            <p>1,245</p>
+          </div>
+          <div class="card" style="border-left-color: #3498db">
+            <h3>Aktif Üyeler</h3>
+            <p>320</p>
+          </div>
+          <div class="card" style="border-left-color: #e67e22">
+            <h3>Ödünç Verilenler</h3>
+            <p>85</p>
+          </div>
+          <div class="card" style="border-left-color: #e74c3c">
+            <h3>Gecikmiş Teslimatlar</h3>
+            <p>12</p>
+          </div>
+        </div>
+
+        <div style="margin-top: 20px">
+          <p style="color: #7f8c8d">
+            Kütüphane sisteminin genel özetini buradan takip edebilirsiniz. Sol
+            menüden detaylı sayfalara geçiş yapın.
+          </p>
+        </div>
+      </main>
+    </div>
+  </body>
+  <script src="../js/admin-sidebar.js" defer></script>
+</html>

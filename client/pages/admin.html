@@ -1,0 +1,69 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <title>Kapsamlı ve Çalışan Kütüphane Admin Paneli</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <body>
+      <!-- Redirect to the dashboard page -->
+      <meta http-equiv="refresh" content="0; url=./admin-dashboard.html">
+      <!-- NOT: Aşağıdaki meta robots etiketi, sayfanın Google ve diğer arama motorları tarafından dizine eklenmesini ve linklerin takip edilmesini engeller. -->
+      <meta name="robots" content="noindex, nofollow">
+      <p>Yönlendiriliyorsunuz: <a href="./admin-dashboard.html">Dashboard</a></p>
+      <script src="../js/admin-sidebar.js" defer></script>
+    </body>
+    </html>
+      <div id="settings" class="page-section">
+        <div class="panel-container">
+          <div class="panel-header">
+            <h2>Sistem Ayarları</h2>
+          </div>
+          <div class="form-group">
+            <label>Kütüphane Adı</label>
+            <input type="text" value="Merkez Kütüphanesi" />
+          </div>
+          <div class="form-group">
+            <label>Maksimum Ödünç Alma Süresi (Gün)</label>
+            <input type="number" value="15" />
+          </div>
+          <div class="form-group">
+            <label>Gecikme Cezası (Günlük TL)</label>
+            <input type="number" value="2" />
+          </div>
+          <button class="btn-save">Ayarları Kaydet</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- JAVASCRIPT: Sekme Geçişlerini Sağlayan Kod -->
+    <script>
+      document.addEventListener("DOMContentLoaded", function () {
+        // Menü öğelerini ve sayfa bölümlerini seçiyoruz
+        const menuItems = document.querySelectorAll("#menu-list li");
+        const pages = document.querySelectorAll(".page-section");
+
+        // Her bir menü öğesine tıklama olayı ekliyoruz
+        menuItems.forEach((item) => {
+          item.addEventListener("click", function () {
+            // 1. Tüm menülerden 'active' sınıfını kaldır
+            menuItems.forEach((m) => m.classList.remove("active"));
+            // 2. Tıklanan menüye 'active' sınıfını ekle (yeşil yapmak için)
+            this.classList.add("active");
+
+            // 3. Hedeflenen sayfanın id'sini al (örn: 'dashboard', 'books')
+            const targetId = this.getAttribute("data-target");
+
+            // 4. Tüm sayfaları gizle ve sadece hedeflenen sayfayı göster
+            pages.forEach((page) => {
+              if (page.id === targetId) {
+                page.classList.add("active");
+              } else {
+                page.classList.remove("active");
+              }
+            });
+          });
+        });
+      });
+    </script>
+  </body>
+</html>

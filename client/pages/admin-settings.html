@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- NOT: Aşağıdaki meta robots etiketi, sayfanın Google ve diğer arama motorları tarafından dizine eklenmesini ve linklerin takip edilmesini engeller. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin — Ayarlar</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>📚 Kütüphane Admin</h2>
+      <ul>
+        <li><a href="./admin-dashboard.html">📊 Dashboard (Özet)</a></li>
+        <li><a href="./admin-books.html">📖 Kitapları Yönet</a></li>
+        <li><a href="./admin-members.html">👥 Üyeler</a></li>
+        <li><a href="./admin-loans.html">🔄 Ödünç İşlemleri</a></li>
+        <li class="active"><a href="./admin-settings.html">⚙️ Ayarlar</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="header">
+        <div class="search-bar">
+          <input type="text" placeholder="Ayar ara..." />
+        </div>
+        <div class="profile-area">
+          <span>👤 Admin</span><button class="logout-btn">Çıkış</button>
+        </div>
+      </div>
+
+      <main class="panel-container">
+        <div class="panel-header"><h2>Sistem Ayarları</h2></div>
+        <div class="form-group">
+          <label>Kütüphane Adı</label
+          ><input type="text" value="Merkez Kütüphanesi" />
+        </div>
+        <div class="form-group">
+          <label>Maksimum Ödünç Alma Süresi (Gün)</label
+          ><input type="number" value="15" />
+        </div>
+        <div class="form-group">
+          <label>Gecikme Cezası (Günlük TL)</label
+          ><input type="number" value="2" />
+        </div>
+        <button class="btn-save">Ayarları Kaydet</button>
+      </main>
+    </div>
+  </body>
+  <script src="../js/admin-sidebar.js" defer></script>
+</html>

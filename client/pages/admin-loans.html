@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- NOT: Aşağıdaki meta robots etiketi, sayfanın Google ve diğer arama motorları tarafından dizine eklenmesini ve linklerin takip edilmesini engeller. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin — Ödünç İşlemleri</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link rel="stylesheet" href="../css/admin.css" />
+    <meta name="robots" content="noindex, nofollow" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>📚 Kütüphane Admin</h2>
+      <ul>
+        <li><a href="./admin-dashboard.html">📊 Dashboard (Özet)</a></li>
+        <li><a href="./admin-books.html">📖 Kitapları Yönet</a></li>
+        <li><a href="./admin-members.html">👥 Üyeler</a></li>
+        <li class="active">
+          <a href="./admin-loans.html">🔄 Ödünç İşlemleri</a>
+        </li>
+        <li><a href="./admin-settings.html">⚙️ Ayarlar</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="header">
+        <div class="search-bar">
+          <input type="text" placeholder="İşlem ID veya kitap ara..." />
+        </div>
+        <div class="profile-area">
+          <span>👤 Admin</span><button class="logout-btn">Çıkış</button>
+        </div>
+      </div>
+
+      <main class="panel-container">
+        <div class="panel-header">
+          <h2>Ödünç Takip Sistemi</h2>
+          <button class="btn-add">Kitap Ödünç Ver</button>
+        </div>
+        <table>
+          <thead>
+            <tr>
+              <th>İşlem ID</th>
+              <th>Kitap Adı</th>
+              <th>Ödünç Alan</th>
+              <th>Veriliş Tarihi</th>
+              <th>Teslim Tarihi</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>TRX-001</td>
+              <td>C++ Programlama</td>
+              <td>Ahmet Yılmaz</td>
+              <td>01 Nisan 2024</td>
+              <td>15 Nisan 2024</td>
+              <td><span class="status status-oduncte">Süresi Var</span></td>
+              <td><button class="btn btn-edit">İade Al</button></td>
+            </tr>
+            <tr>
+              <td>TRX-002</td>
+              <td>Suç ve Ceza</td>
+              <td>Ayşe Demir</td>
+              <td>10 Mart 2024</td>
+              <td>24 Mart 2024</td>
+              <td><span class="status status-gecikmis">Gecikmiş!</span></td>
+              <td><button class="btn btn-delete">İade Al (Ceza)</button></td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </body>
+  <script src="../js/admin-sidebar.js" defer></script>
+</html>

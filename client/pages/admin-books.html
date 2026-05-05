@@ -1,0 +1,94 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <!-- NOT: Aşağıdaki meta robots etiketi, sayfanın Google ve diğer arama motorları tarafından dizine eklenmesini ve linklerin takip edilmesini engeller. -->
+    <meta name="robots" content="noindex, nofollow" />
+    <title>Admin — Kitaplar</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link rel="stylesheet" href="../css/admin.css" />
+  </head>
+  <body>
+    <div class="sidebar">
+      <h2>📚 Kütüphane Admin</h2>
+      <ul>
+        <li><a href="./admin-dashboard.html">📊 Dashboard (Özet)</a></li>
+        <li class="active">
+          <a href="./admin-books.html">📖 Kitapları Yönet</a>
+        </li>
+        <li><a href="./admin-members.html">👥 Üyeler</a></li>
+        <li><a href="./admin-loans.html">🔄 Ödünç İşlemleri</a></li>
+        <li><a href="./admin-settings.html">⚙️ Ayarlar</a></li>
+      </ul>
+    </div>
+
+    <div class="main-content">
+      <div class="header">
+        <div class="search-bar">
+          <input type="text" placeholder="Kitap ara..." />
+        </div>
+        <div class="profile-area">
+          <span>👤 Admin</span><button class="logout-btn">Çıkış</button>
+        </div>
+      </div>
+
+      <main class="panel-container">
+        <div class="panel-header">
+          <h2>Kitap Listesi</h2>
+          <button class="btn-add">+ Yeni Kitap Ekle</button>
+        </div>
+
+        <div class="toolbar">
+          <div class="filters">
+            <select>
+              <option>Tüm Kategoriler</option>
+              <option>Roman</option>
+              <option>Yazılım</option>
+            </select>
+            <select>
+              <option>Tüm Durumlar</option>
+              <option>Rafta</option>
+              <option>Ödünçte</option>
+            </select>
+          </div>
+        </div>
+
+        <table>
+          <thead>
+            <tr>
+              <th>ISBN</th>
+              <th>Kitap Adı</th>
+              <th>Yazar</th>
+              <th>Durum</th>
+              <th>İşlemler</th>
+            </tr>
+          </thead>
+          <tbody>
+            <tr>
+              <td>978-04515</td>
+              <td>1984</td>
+              <td>George Orwell</td>
+              <td><span class="status status-rafta">Rafta</span></td>
+              <td>
+                <button class="btn btn-edit">Düzenle</button
+                ><button class="btn btn-delete">Sil</button>
+              </td>
+            </tr>
+            <tr>
+              <td>978-01311</td>
+              <td>C++ Programlama</td>
+              <td>Bjarne Stroustrup</td>
+              <td><span class="status status-oduncte">Ödünçte</span></td>
+              <td>
+                <button class="btn btn-edit">Düzenle</button
+                ><button class="btn btn-delete">Sil</button>
+              </td>
+            </tr>
+          </tbody>
+        </table>
+      </main>
+    </div>
+  </body>
+  <script src="../js/admin-sidebar.js" defer></script>
+</html>
