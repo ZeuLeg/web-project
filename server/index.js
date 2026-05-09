@@ -41,6 +41,7 @@ const pool = new Pool({
 // 3. Middlewares (Ara Katmanlar)
 // Kaan'ın manuel yaptığı "chunk" toplama ve JSON parse işlemini tek satırda yapar
 app.use(express.json());
+app.use(express.urlencoded({ extended: false }));
 
 // Kaan'ın yazdığı serveStatic fonksiyonunun (MIME tipleri dahil) tek satırlık tam karşılığı
 app.use(express.static(CLIENT_DIR));
