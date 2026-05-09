@@ -1,0 +1,300 @@
+<!doctype html>
+<html lang="tr">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Kitaplarım - Kütüphane</title>
+    <link rel="icon" type="image/svg+xml" href="../assets/icons/favicon.svg" />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="../css/global.css?v=20260509-my-books" />
+  </head>
+  <body>
+    <nav class="navbar navbar-expand-lg navbar-dark py-3">
+      <div class="container">
+        <a class="navbar-brand fw-bold fs-4" href="../index.html">Kütüphane</a>
+
+        <button
+          class="navbar-toggler"
+          type="button"
+          data-bs-toggle="collapse"
+          data-bs-target="#navbarContent"
+          aria-label="Menüyü aç"
+        >
+          <span class="navbar-toggler-icon"></span>
+        </button>
+
+        <div class="collapse navbar-collapse" id="navbarContent">
+          <ul class="navbar-nav ms-auto align-items-center">
+            <li class="nav-item">
+              <a class="nav-link contact-link fw-semibold" href="../index.html"
+                >Ana Sayfa</a
+              >
+            </li>
+            <li class="nav-item">
+              <a class="nav-link complaint-link fw-semibold" href="./books.html"
+                >Kitap Al</a
+              >
+            </li>
+            <li class="nav-item">
+              <a
+                class="nav-link announcement-link fw-semibold"
+                href="./notice.html"
+                >Duyurular</a
+              >
+            </li>
+          </ul>
+        </div>
+      </div>
+    </nav>
+
+    <main class="my-books-page">
+      <section class="my-books-shell">
+        <div class="my-books-hero">
+          <div>
+            <p class="my-books-eyebrow">Kütüphane hesabım</p>
+            <h1>Kitaplarım</h1>
+            <p>
+              Ödünç aldığın kitapları buradan görüntüleyebilir, aktif ödünç
+              işlemlerini iptal edebilirsin.
+            </p>
+          </div>
+          <a class="btn btn-randevu btn-kitap-al text-white" href="./books.html"
+            >Yeni Kitap Al</a
+          >
+        </div>
+
+        <div class="my-books-summary" aria-label="Kitap ödünç özeti">
+          <article>
+            <span id="activeLoanCount">0</span>
+            <p>Aktif kitap</p>
+          </article>
+          <article>
+            <span id="totalLoanCount">0</span>
+            <p>Toplam kayıt</p>
+          </article>
+        </div>
+
+        <p id="loanMessage" class="reservation-message">
+          Kitapların yükleniyor...
+        </p>
+        <div id="loanList" class="loan-list"></div>
+      </section>
+    </main>
+
+    <footer class="footer">
+      <div class="container fw-bold">TÜM HAKLAR SAKLIDIR | ZEDAKY</div>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const loanList = document.getElementById("loanList");
+      const loanMessage = document.getElementById("loanMessage");
+      const activeLoanCount = document.getElementById("activeLoanCount");
+      const totalLoanCount = document.getElementById("totalLoanCount");
+
+      function getSavedStudentId() {
+        const storedStudentId = localStorage.getItem("studentId");
+
+        if (storedStudentId) {
+          return storedStudentId;
+        }
+
+        const cookieStudentId = document.cookie
+          .split("; ")
+          .find((cookie) => cookie.startsWith("studentId="));
+
+        return cookieStudentId
+          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
+          : "";
+      }
+
+      function formatDate(value) {
+        if (!value) {
+          return "-";
+        }
+
+        return new Intl.DateTimeFormat("tr-TR", {
+          dateStyle: "medium",
+          timeStyle: "short",
+        }).format(new Date(value));
+      }
+
+      function formatCategory(category) {
+        const labels = {
+          yazilim: "Yazılım & Algoritma",
+          siber: "Siber Güvenlik",
+          donanim: "Bilgisayar Donanımı",
+          edebiyat: "Roman & Edebiyat",
+        };
+
+        return labels[category] || category || "Genel";
+      }
+
+      function getStatusText(status) {
+        if (status === "active") {
+          return "Ödünçte";
+        }
+
+        if (status === "cancelled") {
+          return "İptal edildi";
+        }
+
+        if (status === "returned") {
+          return "İade edildi";
+        }
+
+        return "Tamamlandı";
+      }
+
+      function setMessage(text) {
+        loanMessage.textContent = text;
+        loanMessage.style.display = text ? "block" : "none";
+      }
+
+      async function loadLoans() {
+        const studentId = getSavedStudentId();
+
+        loanList.innerHTML = "";
+        activeLoanCount.textContent = "0";
+        totalLoanCount.textContent = "0";
+
+        if (!studentId) {
+          setMessage("Kitaplarını görmek için önce giriş yapmalısın.");
+          return;
+        }
+
+        setMessage("Kitapların yükleniyor...");
+
+        try {
+          const response = await fetch(
+            `/api/book-loans?studentId=${encodeURIComponent(studentId)}`,
+          );
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            setMessage(data.message || "Kitapların yüklenemedi.");
+            return;
+          }
+
+          renderLoans(data.loans || []);
+        } catch (error) {
+          setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+        }
+      }
+
+      function renderLoans(loans) {
+        loanList.innerHTML = "";
+
+        const activeLoans = loans.filter((loan) => loan.status === "active");
+        activeLoanCount.textContent = activeLoans.length;
+        totalLoanCount.textContent = loans.length;
+
+        if (loans.length === 0) {
+          setMessage("Henüz ödünç aldığın kitap yok.");
+          return;
+        }
+
+        setMessage("");
+
+        loans.forEach((loan) => {
+          const canCancel = loan.status === "active";
+          const card = document.createElement("article");
+          card.className = `loan-card ${canCancel ? "" : "is-passive"}`;
+
+          const cover = document.createElement("div");
+          cover.className = "loan-cover";
+          cover.textContent = "📖";
+
+          const info = document.createElement("div");
+          info.className = "loan-info";
+
+          const status = document.createElement("span");
+          status.className = `loan-status ${canCancel ? "active" : "cancelled"}`;
+          status.textContent = getStatusText(loan.status);
+
+          const title = document.createElement("h2");
+          title.textContent = loan.title;
+
+          const meta = document.createElement("p");
+          meta.className = "loan-meta";
+          meta.textContent = `${loan.author} · ${formatCategory(loan.category)}`;
+
+          const dates = document.createElement("div");
+          dates.className = "loan-dates";
+
+          const borrowed = document.createElement("p");
+          borrowed.textContent = `Alınma tarihi: ${formatDate(loan.borrowed_at)}`;
+          dates.appendChild(borrowed);
+
+          if (loan.returned_at) {
+            const returned = document.createElement("p");
+            returned.textContent = `İptal tarihi: ${formatDate(loan.returned_at)}`;
+            dates.appendChild(returned);
+          }
+
+          info.append(status, title, meta, dates);
+          card.append(cover, info);
+
+          if (canCancel) {
+            const cancelButton = document.createElement("button");
+            cancelButton.className = "cancel-loan-btn";
+            cancelButton.type = "button";
+            cancelButton.textContent = "İptal Et";
+            cancelButton.addEventListener("click", () =>
+              cancelLoan(loan.id, cancelButton),
+            );
+            card.appendChild(cancelButton);
+          }
+
+          loanList.appendChild(card);
+        });
+      }
+
+      async function cancelLoan(loanId, button) {
+        const studentId = getSavedStudentId();
+        const shouldCancel = window.confirm(
+          "Bu kitabın ödünç kaydını iptal etmek istiyor musun?",
+        );
+
+        if (!shouldCancel) {
+          return;
+        }
+
+        button.disabled = true;
+        button.textContent = "İptal ediliyor...";
+
+        try {
+          const response = await fetch(`/api/book-loans/${loanId}`, {
+            method: "DELETE",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({ studentId }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            setMessage(data.message || "Kitap iptal edilemedi.");
+            button.disabled = false;
+            button.textContent = "İptal Et";
+            return;
+          }
+
+          const successMessage =
+            data.message || "Kitap ödünç işlemi iptal edildi.";
+          await loadLoans();
+          setMessage(successMessage);
+        } catch (error) {
+          setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.");
+          button.disabled = false;
+          button.textContent = "İptal Et";
+        }
+      }
+
+      loadLoans();
+    </script>
+  </body>
+</html>

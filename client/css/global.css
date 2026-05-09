@@ -259,6 +259,191 @@ body {
   transform: translateY(-2px);
 }
 
+.my-books-page {
+  flex: 1;
+  padding: 36px 20px;
+}
+
+.my-books-shell {
+  width: min(980px, 100%);
+  margin: 0 auto;
+}
+
+.my-books-hero {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+  margin-bottom: 18px;
+  padding: 26px;
+  border-radius: 18px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background:
+    radial-gradient(
+      circle at top left,
+      rgba(77, 166, 255, 0.24),
+      transparent 34%
+    ),
+    rgba(255, 255, 255, 0.07);
+  box-shadow: 0 18px 42px rgba(0, 0, 0, 0.34);
+}
+
+.my-books-hero h1 {
+  margin: 0;
+  font-size: clamp(2rem, 6vw, 3.2rem);
+  font-weight: 900;
+  letter-spacing: -0.04em;
+}
+
+.my-books-hero p {
+  max-width: 620px;
+  margin: 8px 0 0;
+  color: #d7e2ee;
+}
+
+.my-books-hero .my-books-eyebrow {
+  color: #8ec9ff;
+  font-size: 0.82rem;
+  font-weight: 900;
+  letter-spacing: 0.18em;
+  text-transform: uppercase;
+}
+
+.btn-kitap-al {
+  background: linear-gradient(45deg, #0d6efd, #4da6ff);
+  box-shadow: 0 4px 15px rgba(13, 110, 253, 0.35);
+  white-space: nowrap;
+}
+
+.my-books-summary {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 14px;
+  margin-bottom: 16px;
+}
+
+.my-books-summary article {
+  padding: 18px;
+  border-radius: 14px;
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  background: rgba(0, 0, 0, 0.2);
+}
+
+.my-books-summary span {
+  display: block;
+  color: #4da6ff;
+  font-size: 2rem;
+  font-weight: 900;
+  line-height: 1;
+}
+
+.my-books-summary p {
+  margin: 8px 0 0;
+  color: #d7e2ee;
+  font-weight: 700;
+}
+
+.loan-list {
+  display: grid;
+  gap: 14px;
+}
+
+.loan-card {
+  display: grid;
+  grid-template-columns: auto 1fr auto;
+  align-items: center;
+  gap: 18px;
+  padding: 18px;
+  border-radius: 16px;
+  border: 1px solid rgba(255, 255, 255, 0.14);
+  background: rgba(255, 255, 255, 0.08);
+  box-shadow: 0 12px 30px rgba(0, 0, 0, 0.22);
+}
+
+.loan-card.is-passive {
+  opacity: 0.72;
+}
+
+.loan-cover {
+  display: grid;
+  place-items: center;
+  width: 74px;
+  height: 94px;
+  border-radius: 14px;
+  background: linear-gradient(145deg, #163b68, #4da6ff);
+  box-shadow: inset 0 0 18px rgba(255, 255, 255, 0.14);
+  font-size: 2.2rem;
+}
+
+.loan-info h2 {
+  margin: 8px 0 4px;
+  color: #ffffff;
+  font-size: 1.28rem;
+  font-weight: 900;
+}
+
+.loan-meta {
+  margin: 0;
+  color: #d7e2ee;
+}
+
+.loan-dates {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+  margin-top: 10px;
+}
+
+.loan-dates p {
+  margin: 0;
+  color: #aebdcc;
+  font-size: 0.92rem;
+}
+
+.loan-status {
+  display: inline-flex;
+  align-items: center;
+  width: fit-content;
+  border-radius: 999px;
+  padding: 5px 10px;
+  font-size: 0.8rem;
+  font-weight: 800;
+}
+
+.loan-status.active {
+  background: rgba(25, 135, 84, 0.18);
+  color: #8df0bd;
+}
+
+.loan-status.cancelled {
+  background: rgba(220, 53, 69, 0.18);
+  color: #ffadb7;
+}
+
+.cancel-loan-btn {
+  border: none;
+  border-radius: 999px;
+  padding: 10px 18px;
+  font-weight: 900;
+  color: #ffffff;
+  background: linear-gradient(45deg, #dc3545, #ff6b6b);
+  transition:
+    transform 0.2s ease,
+    box-shadow 0.2s ease,
+    opacity 0.2s ease;
+}
+
+.cancel-loan-btn:hover {
+  transform: translateY(-2px);
+  box-shadow: 0 8px 18px rgba(220, 53, 69, 0.32);
+}
+
+.cancel-loan-btn:disabled {
+  cursor: wait;
+  opacity: 0.68;
+}
+
 .footer {
   background-color: #000000;
   color: #aaaaaa;
@@ -362,11 +547,26 @@ body {
     }
   }
   .home-actions,
-  .reservation-card {
+  .reservation-card,
+  .loan-card {
     width: 100%;
   }
 
-  .reservation-card {
+  .reservation-card,
+  .loan-card {
     grid-template-columns: 1fr;
+  }
+
+  .my-books-summary {
+    grid-template-columns: 1fr;
+  }
+
+  .my-books-hero {
+    padding: 20px;
+  }
+
+  .loan-cover {
+    width: 100%;
+    height: 110px;
   }
 }

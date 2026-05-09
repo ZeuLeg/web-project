@@ -193,6 +193,15 @@ function isValidStudentId(studentId) {
   return /^[0-9]{9}$/.test(studentId);
 }
 
+function isValidUuid(value) {
+  return (
+    typeof value === "string" &&
+    /^[0-9a-f]{8}-[0-9a-f]{4}-[1-5][0-9a-f]{3}-[89ab][0-9a-f]{3}-[0-9a-f]{12}$/i.test(
+      value,
+    )
+  );
+}
+
 function isValidPassword(password) {
   return /^(?=.*[A-Z]).{8,}$/.test(password);
 }
@@ -627,6 +636,45 @@ app.get("/api/books", async (req, res) => {
   }
 });
 
+app.get("/api/book-loans", async (req, res) => {
+  const studentId = getStudentIdFromRequest(req);
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+        SELECT
+          book_loans.id,
+          book_loans.borrowed_at,
+          book_loans.returned_at,
+          book_loans.status,
+          books.id AS book_id,
+          books.title,
+          books.author,
+          books.category
+        FROM book_loans
+        INNER JOIN users ON users.id = book_loans.user_id
+        INNER JOIN books ON books.id = book_loans.book_id
+        WHERE users.student_id = $1
+        ORDER BY
+          CASE WHEN book_loans.status = 'active' THEN 0 ELSE 1 END,
+          book_loans.borrowed_at DESC
+      `,
+      [studentId],
+    );
+
+    res.status(200).json({ loans: result.rows });
+  } catch (error) {
+    console.error("Kitaplarım listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
 app.post("/api/book-loans", async (req, res) => {
   const studentId = getStudentIdFromRequest(req);
   const bookIds = Array.isArray(req.body.bookIds)
@@ -726,6 +774,49 @@ app.post("/api/book-loans", async (req, res) => {
     }
 
     console.error("Kitap alma hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.delete("/api/book-loans/:id", async (req, res) => {
+  const studentId = getStudentIdFromRequest(req);
+  const { id } = req.params;
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Geçerli bir öğrenci numarası gereklidir." });
+  }
+
+  if (!isValidUuid(id)) {
+    return res.status(400).json({ message: "Kitap kaydı geçersiz." });
+  }
+
+  try {
+    const result = await pool.query(
+      `
+        UPDATE book_loans
+        SET status = 'cancelled',
+            returned_at = NOW()
+        FROM users
+        WHERE book_loans.id = $1
+          AND book_loans.user_id = users.id
+          AND users.student_id = $2
+          AND book_loans.status = 'active'
+        RETURNING book_loans.id
+      `,
+      [id, studentId],
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({
+        message: "Aktif kitap ödünç kaydı bulunamadı veya zaten iptal edilmiş.",
+      });
+    }
+
+    res.status(200).json({ message: "Kitap ödünç işlemi iptal edildi." });
+  } catch (error) {
+    console.error("Kitap ödünç iptal hatası:", error);
     res.status(500).json({ message: "Sunucu hatası oluştu." });
   }
 });
