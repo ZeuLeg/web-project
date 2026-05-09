@@ -9,6 +9,9 @@ services:
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@postgres-db:5432/${DB_NAME}
       - PORT=3000
+      - COMPLAINT_EMAIL_USER=${COMPLAINT_EMAIL_USER:-kutuphanesikayet@gmail.com}
+      - COMPLAINT_EMAIL_PASS=${COMPLAINT_EMAIL_PASS}
+      - COMPLAINT_EMAIL_TO=${COMPLAINT_EMAIL_TO:-yldrmkaan20@gmail.com}
     depends_on:
       - postgres-db
     deploy:

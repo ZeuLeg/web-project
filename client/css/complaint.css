@@ -94,6 +94,27 @@ option {
   color: white;
 }
 
+.btn-submit:disabled {
+  opacity: 0.72;
+  cursor: wait;
+  transform: none;
+}
+
+.complaint-message {
+  min-height: 22px;
+  margin: 0 0 14px;
+  color: #d7e2ee;
+  font-weight: 700;
+}
+
+.complaint-message.is-error {
+  color: #ffb3b3;
+}
+
+.complaint-message.is-success {
+  color: #8df0bd;
+}
+
 /* Placeholder metinlerinin daha görünür olması için renk ayarı */
 .form-control::placeholder {
   color: rgba(255, 255, 255, 0.65);

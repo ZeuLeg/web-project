@@ -71,7 +71,7 @@
           çok önemli.
         </p>
 
-        <form action="#" method="POST">
+        <form id="complaintForm" action="#" method="POST">
           <div class="row mb-3">
             <div class="col-md-6">
               <label for="adSoyad" class="form-label">Adınız Soyadınız</label>
@@ -79,9 +79,11 @@
                 type="text"
                 class="form-control"
                 id="adSoyad"
+                name="fullName"
                 placeholder="Ad Soyad"
                 pattern="^[A-Za-zÇÖÜĞİçöüğı\s]{3,}$"
                 title="Adınız yalnızca harf ve boşluk içermelidir (en az 3 karakter)."
+                maxlength="80"
                 required
               />
             </div>
@@ -93,10 +95,11 @@
                 type="text"
                 class="form-control"
                 id="ogrenciNo"
-                placeholder="Örn: 230709074"
-                pattern="^[0-9]{2}0709[0-9]{3}$"
+                name="studentId"
+                placeholder="Örn: 230123456"
+                pattern="^[0-9]{9}$"
                 inputmode="numeric"
-                title="Öğrenci numarası örn: 230709074 (ilk 2 hane yıl, sonra 0709, son 3 hane değişir)."
+                title="Öğrenci numarası tam olarak 9 haneli olmalıdır."
                 required
               />
             </div>
@@ -104,7 +107,7 @@
 
           <div class="mb-3">
             <label for="konu" class="form-label">Konu</label>
-            <select class="form-select" id="konu" required>
+            <select class="form-select" id="konu" name="topic" required>
               <option value="" selected disabled>
                 Lütfen bir konu seçin...
               </option>
@@ -122,13 +125,26 @@
             <textarea
               class="form-control"
               id="mesaj"
+              name="message"
               rows="5"
               placeholder="Lütfen karşılaştığınız durumu veya önerinizi detaylıca yazın..."
+              minlength="10"
+              maxlength="2000"
               required
             ></textarea>
           </div>
 
-          <button type="submit" class="btn btn-submit text-white">
+          <p
+            id="complaintMessage"
+            class="complaint-message"
+            aria-live="polite"
+          ></p>
+
+          <button
+            id="complaintSubmitButton"
+            type="submit"
+            class="btn btn-submit text-white"
+          >
             Gönder
           </button>
         </form>
@@ -140,5 +156,69 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+      const complaintForm = document.getElementById("complaintForm");
+      const complaintMessage = document.getElementById("complaintMessage");
+      const complaintSubmitButton = document.getElementById(
+        "complaintSubmitButton",
+      );
+
+      function setComplaintMessage(text, type = "") {
+        complaintMessage.textContent = text;
+        complaintMessage.className =
+          `complaint-message ${type ? `is-${type}` : ""}`.trim();
+      }
+
+      complaintForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+
+        if (!complaintForm.checkValidity()) {
+          complaintForm.reportValidity();
+          return;
+        }
+
+        complaintSubmitButton.disabled = true;
+        complaintSubmitButton.textContent = "Gönderiliyor...";
+        setComplaintMessage("Şikayetin e-posta olarak gönderiliyor...");
+
+        try {
+          const response = await fetch("/api/complaints", {
+            method: "POST",
+            headers: {
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify({
+              fullName: complaintForm.elements.fullName.value.trim(),
+              studentId: complaintForm.elements.studentId.value.trim(),
+              topic: complaintForm.elements.topic.value,
+              message: complaintForm.elements.message.value.trim(),
+            }),
+          });
+          const data = await response.json().catch(() => ({}));
+
+          if (!response.ok) {
+            setComplaintMessage(
+              data.message || "Şikayetin gönderilemedi.",
+              "error",
+            );
+            return;
+          }
+
+          setComplaintMessage(
+            data.message || "Şikayetin başarıyla gönderildi.",
+            "success",
+          );
+          complaintForm.reset();
+        } catch (error) {
+          setComplaintMessage(
+            "Sunucuya bağlanılamadı. Lütfen tekrar deneyin.",
+            "error",
+          );
+        } finally {
+          complaintSubmitButton.disabled = false;
+          complaintSubmitButton.textContent = "Gönder";
+        }
+      });
+    </script>
   </body>
 </html>

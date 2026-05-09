@@ -1,6 +1,7 @@
 import express from "express";
 import pkg from "pg";
 import argon2 from "argon2";
+import nodemailer from "nodemailer";
 import { fileURLToPath } from "url";
 import { dirname, join } from "path";
 
@@ -12,6 +13,22 @@ const __dirname = dirname(__filename);
 const PORT = process.env.PORT || 3000;
 const CLIENT_DIR = join(__dirname, "..", "client");
 const { Pool } = pkg;
+const COMPLAINT_EMAIL_USER =
+  process.env.COMPLAINT_EMAIL_USER || "kutuphanesikayet@gmail.com";
+const COMPLAINT_EMAIL_TO =
+  process.env.COMPLAINT_EMAIL_TO || "yldrmkaan20@gmail.com";
+const COMPLAINT_EMAIL_PASS = process.env.COMPLAINT_EMAIL_PASS?.replace(
+  /\s/g,
+  "",
+);
+const complaintTopicLabels = {
+  gurultu: "Gürültü / Ses Problemi",
+  temizlik: "Temizlik ve Hijyen",
+  teknik: "Teknik Arıza (Priz, İnternet vs.)",
+  personel: "Personel İletişimi",
+  oneri: "Genel Öneri",
+  diger: "Diğer",
+};
 
 const app = express();
 
@@ -193,6 +210,10 @@ function isValidStudentId(studentId) {
   return /^[0-9]{9}$/.test(studentId);
 }
 
+function isValidFullName(fullName) {
+  return /^[A-Za-zÇÖÜĞİçöüğı\s]{3,80}$/.test(fullName);
+}
+
 function isValidUuid(value) {
   return (
     typeof value === "string" &&
@@ -204,6 +225,78 @@ function isValidUuid(value) {
 
 function isValidPassword(password) {
   return /^(?=.*[A-Z]).{8,}$/.test(password);
+}
+
+function isValidComplaintMessage(message) {
+  return (
+    typeof message === "string" &&
+    message.length >= 10 &&
+    message.length <= 2000
+  );
+}
+
+function escapeHtml(value) {
+  return String(value).replace(/[&<>"']/g, (char) => {
+    const entities = {
+      "&": "&amp;",
+      "<": "&lt;",
+      ">": "&gt;",
+      '"': "&quot;",
+      "'": "&#39;",
+    };
+
+    return entities[char];
+  });
+}
+
+function createComplaintEmailHtml(complaint) {
+  return `
+    <div style="font-family: Arial, sans-serif; color: #172033; line-height: 1.55;">
+      <h2 style="margin: 0 0 16px;">Yeni Şikayet / Öneri</h2>
+      <p><strong>Ad Soyad:</strong> ${escapeHtml(complaint.fullName)}</p>
+      <p><strong>Öğrenci No:</strong> ${escapeHtml(complaint.studentId)}</p>
+      <p><strong>Konu:</strong> ${escapeHtml(complaint.topicLabel)}</p>
+      <p><strong>Gönderim Tarihi:</strong> ${escapeHtml(complaint.sentAt)}</p>
+      <hr style="border: 0; border-top: 1px solid #d7deea; margin: 18px 0;" />
+      <p style="white-space: pre-wrap;">${escapeHtml(complaint.message)}</p>
+    </div>
+  `;
+}
+
+function createComplaintEmailText(complaint) {
+  return [
+    "Yeni Şikayet / Öneri",
+    "",
+    `Ad Soyad: ${complaint.fullName}`,
+    `Öğrenci No: ${complaint.studentId}`,
+    `Konu: ${complaint.topicLabel}`,
+    `Gönderim Tarihi: ${complaint.sentAt}`,
+    "",
+    "Mesaj:",
+    complaint.message,
+  ].join("\n");
+}
+
+async function sendComplaintEmail(complaint) {
+  if (!COMPLAINT_EMAIL_PASS) {
+    throw new Error("COMPLAINT_EMAIL_PASS eksik.");
+  }
+
+  const transporter = nodemailer.createTransport({
+    service: "gmail",
+    auth: {
+      user: COMPLAINT_EMAIL_USER,
+      pass: COMPLAINT_EMAIL_PASS,
+    },
+  });
+
+  await transporter.sendMail({
+    from: `"Kütüphane Şikayet Formu" <${COMPLAINT_EMAIL_USER}>`,
+    to: COMPLAINT_EMAIL_TO,
+    subject: `Yeni şikayet/öneri: ${complaint.topicLabel}`,
+    text: createComplaintEmailText(complaint),
+    html: createComplaintEmailHtml(complaint),
+  });
 }
 
 function getCookieValue(req, name) {
@@ -385,6 +478,61 @@ app.post("/api/logout", (req, res) => {
     sameSite: "lax",
   });
   res.status(200).json({ message: "Çıkış yapıldı." });
+});
+
+app.post("/api/complaints", async (req, res) => {
+  const fullName = String(req.body.fullName || "")
+    .trim()
+    .replace(/\s+/g, " ");
+  const studentId = String(req.body.studentId || "").trim();
+  const topic = String(req.body.topic || "").trim();
+  const message = String(req.body.message || "").trim();
+  const topicLabel = complaintTopicLabels[topic];
+
+  if (!isValidFullName(fullName)) {
+    return res.status(400).json({
+      message:
+        "Ad soyad yalnızca harf ve boşluk içermeli, 3-80 karakter olmalıdır.",
+    });
+  }
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return res
+      .status(400)
+      .json({ message: "Öğrenci numarası tam olarak 9 haneli olmalıdır." });
+  }
+
+  if (!topicLabel) {
+    return res.status(400).json({ message: "Geçerli bir konu seçmelisin." });
+  }
+
+  if (!isValidComplaintMessage(message)) {
+    return res.status(400).json({
+      message: "Mesaj en az 10, en fazla 2000 karakter olmalıdır.",
+    });
+  }
+
+  try {
+    await sendComplaintEmail({
+      fullName,
+      studentId,
+      topicLabel,
+      message,
+      sentAt: new Intl.DateTimeFormat("tr-TR", {
+        dateStyle: "full",
+        timeStyle: "short",
+        timeZone: "Europe/Istanbul",
+      }).format(new Date()),
+    });
+
+    res.status(200).json({ message: "Şikayetin başarıyla gönderildi." });
+  } catch (error) {
+    console.error("Şikayet e-posta gönderim hatası:", error);
+    res.status(500).json({
+      message:
+        "Şikayet kaydedilemedi. E-posta ayarlarını kontrol edip tekrar deneyin.",
+    });
+  }
 });
 
 app.post("/api/reservations", async (req, res) => {

@@ -19,6 +19,9 @@ jobs:
           echo "DB_NAME=${{ secrets.DB_NAME }}" >> .env
           echo "SECRET_KEY=${{ secrets.SECRET_KEY }}" >> .env
           echo "PORT=3000" >> .env
+          echo "COMPLAINT_EMAIL_USER=${{ secrets.COMPLAINT_EMAIL_USER }}" >> .env
+          echo "COMPLAINT_EMAIL_PASS=${{ secrets.COMPLAINT_EMAIL_PASS }}" >> .env
+          echo "COMPLAINT_EMAIL_TO=${{ secrets.COMPLAINT_EMAIL_TO }}" >> .env
 
       - name: Docker Konteynerlerini Yeniden İnşa Et
         run: |
