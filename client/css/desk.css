@@ -335,7 +335,7 @@ body {
   border: 1px solid #ccc;
   border-radius: 6px; /* Panelin genelindeki oval hatlara uyum sağlar */
   font-size: 14px;
-  font-family: inherit;
+  font-family: "Segoe UI", Roboto, "Helvetica Neue", Arial, sans-serif;
   outline: none;
   transition: border-color 0.2s ease-in-out;
 }
