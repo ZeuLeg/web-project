@@ -1,4 +1,5 @@
 import express from "express";
+import cors from "cors";
 import pkg from "pg";
 import argon2 from "argon2";
 import nodemailer from "nodemailer";
@@ -39,6 +40,13 @@ const pool = new Pool({
 });
 
 // 3. Middlewares (Ara Katmanlar)
+// CORS'u etkinleştir - Frontend'den gelen isteklere izin ver
+app.use(cors({
+  origin: "*",
+  methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
+  credentials: true,
+}));
+
 // Kaan'ın manuel yaptığı "chunk" toplama ve JSON parse işlemini tek satırda yapar
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
@@ -828,21 +836,21 @@ app.post("/api/book-loans", async (req, res) => {
   const studentId = getStudentIdFromRequest(req);
   const bookIds = Array.isArray(req.body.bookIds)
     ? [
-        ...new Set(
-          req.body.bookIds
-            .map(Number)
-            .filter((bookId) => Number.isInteger(bookId) && bookId > 0),
-        ),
-      ]
+      ...new Set(
+        req.body.bookIds
+          .map(Number)
+          .filter((bookId) => Number.isInteger(bookId) && bookId > 0),
+      ),
+    ]
     : [];
   const bookTitles = Array.isArray(req.body.bookTitles)
     ? [
-        ...new Set(
-          req.body.bookTitles
-            .map((title) => String(title).trim())
-            .filter(Boolean),
-        ),
-      ]
+      ...new Set(
+        req.body.bookTitles
+          .map((title) => String(title).trim())
+          .filter(Boolean),
+      ),
+    ]
     : [];
   const selectedBookCount = bookTitles.length || bookIds.length;
 
@@ -970,7 +978,269 @@ app.delete("/api/book-loans/:id", async (req, res) => {
   }
 });
 
-// 6. Sunucuyu Ayağa Kaldırma
+// 6. Admin Endpoints
+app.get("/api/admin/dashboard", async (req, res) => {
+  try {
+    const totalBooksResult = await pool.query("SELECT COUNT(*) as count FROM books");
+    const totalUsersResult = await pool.query("SELECT COUNT(*) as count FROM users WHERE role = 'student'");
+    const activeBooksResult = await pool.query(
+      "SELECT COUNT(*) as count FROM book_loans WHERE status = 'active'"
+    );
+    const overdueLoansResult = await pool.query(
+      `SELECT COUNT(*) as count FROM book_loans 
+       WHERE status = 'active' AND DATE(NOW()) > DATE(borrowed_at + INTERVAL '15 days')`
+    );
+
+    res.status(200).json({
+      totalBooks: parseInt(totalBooksResult.rows[0].count),
+      totalUsers: parseInt(totalUsersResult.rows[0].count),
+      activeLoans: parseInt(activeBooksResult.rows[0].count),
+      overdueLoans: parseInt(overdueLoansResult.rows[0].count),
+    });
+  } catch (error) {
+    console.error("Dashboard verisi hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.get("/api/admin/books", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        books.id,
+        books.title,
+        books.author,
+        books.category,
+        CASE WHEN book_loans.id IS NULL THEN 'Rafta' ELSE 'Ödünçte' END AS status,
+        COUNT(book_loans.id) as loan_count
+      FROM books
+      LEFT JOIN book_loans ON book_loans.book_id = books.id AND book_loans.status = 'active'
+      GROUP BY books.id, books.title, books.author, books.category, book_loans.id
+      ORDER BY books.title ASC
+    `);
+
+    res.status(200).json({ books: result.rows });
+  } catch (error) {
+    console.error("Admin kitapları listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.post("/api/admin/books", async (req, res) => {
+  const title = String(req.body.title || "").trim();
+  const author = String(req.body.author || "").trim();
+  const category = String(req.body.category || "").trim();
+
+  if (!title || !author || !category) {
+    return res.status(400).json({ message: "Başlık, yazar ve kategori zorunludur." });
+  }
+
+  if (title.length < 3 || title.length > 150) {
+    return res.status(400).json({ message: "Başlık 3-150 karakter olmalıdır." });
+  }
+
+  if (author.length < 3 || author.length > 150) {
+    return res.status(400).json({ message: "Yazar adı 3-150 karakter olmalıdır." });
+  }
+
+  try {
+    const result = await pool.query(
+      "INSERT INTO books (title, author, category) VALUES ($1, $2, $3) RETURNING *",
+      [title, author, category]
+    );
+
+    res.status(201).json({ message: "Kitap başarıyla eklendi.", book: result.rows[0] });
+  } catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({ message: "Bu başlıkta kitap zaten var." });
+    }
+    console.error("Kitap ekleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.put("/api/admin/books/:id", async (req, res) => {
+  const bookId = Number(req.params.id);
+  const title = String(req.body.title || "").trim();
+  const author = String(req.body.author || "").trim();
+  const category = String(req.body.category || "").trim();
+
+  if (!Number.isInteger(bookId) || bookId <= 0) {
+    return res.status(400).json({ message: "Geçersiz kitap ID." });
+  }
+
+  if (!title || !author || !category) {
+    return res.status(400).json({ message: "Başlık, yazar ve kategori zorunludur." });
+  }
+
+  try {
+    const result = await pool.query(
+      "UPDATE books SET title = $1, author = $2, category = $3 WHERE id = $4 RETURNING *",
+      [title, author, category, bookId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Kitap bulunamadı." });
+    }
+
+    res.status(200).json({ message: "Kitap başarıyla güncellendi.", book: result.rows[0] });
+  } catch (error) {
+    if (error.code === "23505") {
+      return res.status(409).json({ message: "Bu başlıkta kitap zaten var." });
+    }
+    console.error("Kitap güncelleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.delete("/api/admin/books/:id", async (req, res) => {
+  const bookId = Number(req.params.id);
+
+  if (!Number.isInteger(bookId) || bookId <= 0) {
+    return res.status(400).json({ message: "Geçersiz kitap ID." });
+  }
+
+  try {
+    const hasLoans = await pool.query(
+      "SELECT COUNT(*) as count FROM book_loans WHERE book_id = $1",
+      [bookId]
+    );
+
+    if (parseInt(hasLoans.rows[0].count) > 0) {
+      return res.status(409).json({ message: "Ödünç kayıtları olan kitapları silemezsiniz." });
+    }
+
+    const result = await pool.query("DELETE FROM books WHERE id = $1 RETURNING id", [bookId]);
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Kitap bulunamadı." });
+    }
+
+    res.status(200).json({ message: "Kitap başarıyla silindi." });
+  } catch (error) {
+    console.error("Kitap silme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.get("/api/admin/members", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        users.id,
+        users.student_id,
+        users.tc_id,
+        COUNT(book_loans.id) as total_loans,
+        COUNT(CASE WHEN book_loans.status = 'active' THEN 1 END) as active_loans
+      FROM users
+      LEFT JOIN book_loans ON book_loans.user_id = users.id
+      WHERE users.role = 'student'
+      GROUP BY users.id, users.student_id, users.tc_id
+      ORDER BY users.student_id ASC
+    `);
+
+    res.status(200).json({ members: result.rows });
+  } catch (error) {
+    console.error("Üyeleri listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.get("/api/admin/members/:id", async (req, res) => {
+  const userId = req.params.id;
+
+  if (!isValidUuid(userId)) {
+    return res.status(400).json({ message: "Geçersiz kullanıcı ID." });
+  }
+
+  try {
+    const userResult = await pool.query("SELECT id, student_id, tc_id FROM users WHERE id = $1", [userId]);
+
+    if (userResult.rows.length === 0) {
+      return res.status(404).json({ message: "Kullanıcı bulunamadı." });
+    }
+
+    const loansResult = await pool.query(
+      `
+        SELECT
+          book_loans.id,
+          book_loans.borrowed_at,
+          book_loans.returned_at,
+          book_loans.status,
+          books.title,
+          books.author
+        FROM book_loans
+        INNER JOIN books ON books.id = book_loans.book_id
+        WHERE book_loans.user_id = $1
+        ORDER BY book_loans.borrowed_at DESC
+      `,
+      [userId]
+    );
+
+    res.status(200).json({ user: userResult.rows[0], loans: loansResult.rows });
+  } catch (error) {
+    console.error("Üye detay hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.get("/api/admin/loans", async (req, res) => {
+  try {
+    const result = await pool.query(`
+      SELECT
+        book_loans.id,
+        book_loans.borrowed_at,
+        book_loans.returned_at,
+        book_loans.status,
+        users.student_id,
+        books.title,
+        books.author,
+        CASE WHEN DATE(NOW()) > DATE(book_loans.borrowed_at + INTERVAL '15 days') AND book_loans.status = 'active'
+          THEN true ELSE false END AS is_overdue
+      FROM book_loans
+      INNER JOIN users ON users.id = book_loans.user_id
+      INNER JOIN books ON books.id = book_loans.book_id
+      ORDER BY book_loans.borrowed_at DESC
+    `);
+
+    res.status(200).json({ loans: result.rows });
+  } catch (error) {
+    console.error("Ödünç listeleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+app.put("/api/admin/loans/:id", async (req, res) => {
+  const loanId = req.params.id;
+  const status = String(req.body.status || "").trim();
+
+  if (!isValidUuid(loanId)) {
+    return res.status(400).json({ message: "Geçersiz ödünç ID." });
+  }
+
+  if (!["active", "returned", "cancelled"].includes(status)) {
+    return res.status(400).json({ message: "Geçersiz durum." });
+  }
+
+  try {
+    const result = await pool.query(
+      `UPDATE book_loans SET status = $1, returned_at = CASE WHEN $1 != 'active' THEN NOW() ELSE returned_at END
+       WHERE id = $2 RETURNING *`,
+      [status, loanId]
+    );
+
+    if (result.rows.length === 0) {
+      return res.status(404).json({ message: "Ödünç kaydı bulunamadı." });
+    }
+
+    res.status(200).json({ message: "Ödünç işlemi güncellendi.", loan: result.rows[0] });
+  } catch (error) {
+    console.error("Ödünç güncelleme hatası:", error);
+    res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+});
+
+// 7. Sunucuyu Ayağa Kaldırma
 initializeDatabase()
   .then(() => {
     setInterval(() => {

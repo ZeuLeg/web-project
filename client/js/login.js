@@ -44,7 +44,7 @@ form.addEventListener("submit", async (event) => {
       studentId,
     )}; path=/; max-age=604800; SameSite=Lax`;
     window.location.replace("https://library.zeuleg.dev/index.html");
-  } catch (error) {
+  } catch {
     setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
   } finally {
     submitButton.disabled = false;
