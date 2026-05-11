@@ -62,11 +62,11 @@ function renderMembersTable(members) {
       (member) => `
     <tr>
       <td>${member.student_id}</td>
-      <td>Kullanıcı #${member.id.substring(0, 8)}</td>
+      <td>${member.tc_id || "Belirtilmemiş"}</td>
       <td>${member.active_loans || 0}</td>
       <td>${member.total_loans || 0}</td>
       <td><span class="status status-aktif">Aktif</span></td>
-      <td><button class="btn btn-edit" onclick="viewMemberProfile('${member.id}')">Profil</button></td>
+      <td><button class="btn btn-edit" onclick="viewMemberProfile('${member.id}')">İncele</button></td>
     </tr>
   `
     )
@@ -79,6 +79,6 @@ function filterMembers() {
   renderMembersTable(filtered);
 }
 
-function viewMemberProfile(memberId) {
+window.viewMemberProfile = function (memberId) {
   alert("Üye Detayları:\nID: " + memberId);
 }

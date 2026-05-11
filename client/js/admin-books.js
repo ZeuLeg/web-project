@@ -38,10 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
     addBtn.addEventListener("click", showAddBookForm);
   }
 
-  const searchBar = document.querySelector(".search-bar input");
-  if (searchBar) {
-    searchBar.addEventListener("keyup", filterBooks);
-  }
+  // Metin kutusu ve Select menülerini dinlemeye al
+  const searchInput = document.querySelector(".search-bar input");
+  const selects = document.querySelectorAll(".filters select");
+
+  if (searchInput) searchInput.addEventListener("keyup", window.applyFilters);
+  selects.forEach(select => select.addEventListener("change", window.applyFilters));
 
 });
 
@@ -114,7 +116,7 @@ async function addBook(title, author, category) {
   }
 }
 
-function editBook(bookId) {
+window.editBook = async function (bookId) {
   const book = allBooks.find((b) => b.id === bookId);
   if (!book) return;
 
@@ -150,7 +152,7 @@ async function updateBook(bookId, title, author, category) {
   }
 }
 
-async function deleteBook(bookId) {
+window.deleteBook = async function (bookId) {
   if (!confirm("Bu kitabı silmek istediğinize emin misiniz?")) return;
 
   try {
@@ -170,15 +172,28 @@ async function deleteBook(bookId) {
   }
 }
 
-function filterBooks() {
-  const searchBar = document.querySelector(".search-bar input");
-  if (!searchBar) return;
+window.applyFilters = function () {
+  const searchInput = document.querySelector(".search-bar input");
+  const selects = document.querySelectorAll(".filters select");
 
-  const searchTerm = searchBar.value.toLowerCase();
-  const filtered = allBooks.filter((book) =>
-    (book.title && book.title.toLowerCase().includes(searchTerm)) ||
-    (book.author && book.author.toLowerCase().includes(searchTerm)) ||
-    (book.category && book.category.toLowerCase().includes(searchTerm))
-  );
+  const searchTerm = searchInput ? searchInput.value.toLowerCase() : "";
+  const categoryFilter = selects[0] ? selects[0].value : "Tüm Kategoriler";
+  const statusFilter = selects[1] ? selects[1].value : "Tüm Durumlar";
+
+  const filtered = allBooks.filter((book) => {
+    // 1. Metin Araması
+    const matchText = (book.title && book.title.toLowerCase().includes(searchTerm)) ||
+      (book.author && book.author.toLowerCase().includes(searchTerm));
+
+    // 2. Kategori Filtresi
+    const matchCategory = categoryFilter === "Tüm Kategoriler" ||
+      (book.category && book.category.toLowerCase() === categoryFilter.toLowerCase());
+
+    // 3. Durum Filtresi (Backend 'Rafta' veya 'Ödünçte' döndürüyor)
+    const matchStatus = statusFilter === "Tüm Durumlar" || book.status === statusFilter;
+
+    return matchText && matchCategory && matchStatus;
+  });
+
   renderBooksTable(filtered);
 }
