@@ -62,6 +62,12 @@ ON book_loans (book_id)
 WHERE status = 'active';
 
 -- Test için veri ekleme
+INSERT INTO users (tc_id, student_id, password_hash, role)
+VALUES
+    ('10000000001', '900000001', 'Admin1234', 'admin'),
+    ('10000000002', '900000002', 'Ogrenci1234', 'student')
+ON CONFLICT DO NOTHING;
+
 INSERT INTO zones (name) VALUES ('1. Kat'), ('2. Kat'), ('3. Kat') ON CONFLICT DO NOTHING;
 INSERT INTO desks (zone_id, desk_number)
 SELECT zones.id, desk_numbers.desk_number

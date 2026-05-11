@@ -205,7 +205,7 @@ async function initializeDatabase() {
       `
         INSERT INTO users (tc_id, student_id, password_hash, role)
         VALUES ($1, $2, $3, $4)
-        ON CONFLICT (student_id) DO NOTHING
+        ON CONFLICT DO NOTHING
       `,
       [
         seedUser.tcId,
