@@ -9,19 +9,19 @@ body {
 
 /* Navbar */
 .navbar {
-  background-color: rgba(0, 0, 0, 0.8) !important;
+  background-color: rgba(0, 0, 0, 0.8);
   backdrop-filter: blur(10px);
   border-bottom: 1px solid #333;
 }
 
 .back-link {
-  color: #4da6ff !important;
+  color: #4da6ff;
   transition: color 0.3s ease;
   text-decoration: none;
 }
 
 .back-link:hover {
-  color: #99ccff !important;
+  color: #99ccff;
 }
 
 /* Form Alanı (Cam Efekti) */
