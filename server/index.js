@@ -51,9 +51,6 @@ app.use(cors({
 app.use(express.json());
 app.use(express.urlencoded({ extended: false }));
 
-// Kaan'ın yazdığı serveStatic fonksiyonunun (MIME tipleri dahil) tek satırlık tam karşılığı
-app.use(express.static(CLIENT_DIR));
-
 async function initializeDatabase() {
   await pool.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
 

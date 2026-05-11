@@ -38,6 +38,12 @@ document.addEventListener("DOMContentLoaded", function () {
   if (addBtn) {
     addBtn.addEventListener("click", showAddBookForm);
   }
+
+  const searchBar = document.querySelector(".search-bar input");
+  if (searchBar) {
+    searchBar.addEventListener("keyup", filterBooks);
+  }
+
 });
 
 async function loadBooks() {
@@ -163,4 +169,17 @@ async function deleteBook(bookId) {
   } catch (error) {
     alert("Kitap silme hatası: " + error.message);
   }
+}
+
+function filterBooks() {
+  const searchBar = document.querySelector(".search-bar input");
+  if (!searchBar) return;
+
+  const searchTerm = searchBar.value.toLowerCase();
+  const filtered = allBooks.filter((book) =>
+    (book.title && book.title.toLowerCase().includes(searchTerm)) ||
+    (book.author && book.author.toLowerCase().includes(searchTerm)) ||
+    (book.category && book.category.toLowerCase().includes(searchTerm))
+  );
+  renderBooksTable(filtered);
 }
