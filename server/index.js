@@ -576,10 +576,12 @@ app.get("/api/auth/me", requireAuthenticatedUser, (req, res) => {
 app.post("/api/logout", (req, res) => {
   res.clearCookie("studentId", {
     path: "/",
+    httpOnly: true,
     sameSite: "lax",
   });
   res.clearCookie("studentId", {
     path: "/api",
+    httpOnly: true,
     sameSite: "lax",
   });
   res.status(200).json({ message: "Çıkış yapıldı." });
