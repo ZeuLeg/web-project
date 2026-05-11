@@ -202,6 +202,13 @@ body {
   animation-play-state: paused;
 }
 
+/* JS kontrollü mod: CSS animasyonunu devre dışı bırakıp JS üzerinden geçiş yapar */
+.photo-slider.js-controlled .photo-track img {
+  animation: none !important;
+  opacity: 0 !important;
+  transition: opacity 600ms ease !important;
+}
+
 .home-actions {
   display: flex;
   justify-content: center;
