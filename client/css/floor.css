@@ -34,7 +34,7 @@ body {
   .home-page {
     justify-content: flex-start;
     gap: 16px;
-    padding: 16px 16px calc(84px + env(safe-area-inset-bottom));
+    padding: 16px 16px 84px;
   }
 
   .home-page .top-photo-slider {
@@ -51,13 +51,11 @@ body {
   }
 
   .home-page .home-footer {
-    padding: 12px 14px calc(12px + env(safe-area-inset-bottom));
+    padding: 12px 14px 12px;
     min-height: 48px;
     font-size: 13px;
     letter-spacing: 0.2px;
     background-color: rgba(0, 0, 0, 0.72);
-    backdrop-filter: blur(6px);
-    -webkit-backdrop-filter: blur(6px);
   }
 }
 
@@ -151,8 +149,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.28);
   border-radius: 18px;
   box-shadow: 0 20px 45px rgba(0, 0, 0, 0.25);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
   animation: soft-appear 1400ms ease-out; /* Randevu alma kutusunun açılış animasyonu */
 }
 
@@ -172,8 +168,6 @@ body {
   border: 1px solid rgba(255, 255, 255, 0.28);
   box-shadow: 0 12px 30px rgba(0, 0, 0, 0.25);
   background: rgba(12, 20, 29, 0.44);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 /* Sayfanın en üstünde sabit duran ve sürekli kayan duyuru çubuğu */
@@ -454,8 +448,6 @@ body {
   /* Masa seçim kartının stili */
   border-radius: 18px;
   background: rgba(255, 255, 255, 0.92);
-  backdrop-filter: blur(4px);
-  -webkit-backdrop-filter: blur(4px);
 }
 
 .table-page .desk-grid {
