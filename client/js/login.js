@@ -1,6 +1,25 @@
 const form = document.querySelector("#loginForm");
 const message = document.querySelector("#formMessage");
 
+async function redirectIfAuthenticated() {
+  try {
+    const response = await fetch("/api/auth/me");
+
+    if (!response.ok) {
+      return;
+    }
+
+    const data = await response.json().catch(() => ({}));
+    const redirectTo = data.redirectTo || "/index.html";
+
+    window.location.replace(redirectTo);
+  } catch {
+    return;
+  }
+}
+
+redirectIfAuthenticated();
+
 function setMessage(text, type) {
   message.textContent = text;
   message.className = `form-message ${type ? `is-${type}` : ""}`.trim();
@@ -43,7 +62,7 @@ form.addEventListener("submit", async (event) => {
     document.cookie = `studentId=${encodeURIComponent(
       studentId,
     )}; path=/; max-age=604800; SameSite=Lax`;
-    window.location.replace("https://library.zeuleg.dev/index.html");
+    window.location.replace(data.redirectTo || "/index.html");
   } catch {
     setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
   } finally {

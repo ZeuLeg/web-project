@@ -42,7 +42,7 @@ const pool = new Pool({
 // 3. Middlewares (Ara Katmanlar)
 // CORS'u etkinleştir - Frontend'den gelen isteklere izin ver
 app.use(cors({
-  origin: "*",
+  origin: true,
   methods: ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
   credentials: true,
 }));
@@ -56,6 +56,16 @@ app.use(express.static(CLIENT_DIR));
 
 async function initializeDatabase() {
   await pool.query(`CREATE EXTENSION IF NOT EXISTS "uuid-ossp"`);
+
+  await pool.query(`
+    CREATE TABLE IF NOT EXISTS users (
+      id UUID PRIMARY KEY DEFAULT uuid_generate_v4(),
+      tc_id VARCHAR(11) UNIQUE,
+      student_id VARCHAR(9) UNIQUE NOT NULL,
+      password_hash VARCHAR(255) NOT NULL,
+      role VARCHAR(20) DEFAULT 'student'
+    )
+  `);
 
   await pool.query(`
     ALTER TABLE users
@@ -174,6 +184,37 @@ async function initializeDatabase() {
     SET author = EXCLUDED.author,
         category = EXCLUDED.category
   `);
+
+  const seedUsers = [
+    {
+      tcId: "10000000001",
+      studentId: "900000001",
+      password: "Admin1234",
+      role: "admin",
+    },
+    {
+      tcId: "10000000002",
+      studentId: "900000002",
+      password: "Ogrenci1234",
+      role: "student",
+    },
+  ];
+
+  for (const seedUser of seedUsers) {
+    await pool.query(
+      `
+        INSERT INTO users (tc_id, student_id, password_hash, role)
+        VALUES ($1, $2, $3, $4)
+        ON CONFLICT (student_id) DO NOTHING
+      `,
+      [
+        seedUser.tcId,
+        seedUser.studentId,
+        await hashPassword(seedUser.password),
+        seedUser.role,
+      ],
+    );
+  }
 }
 
 async function hashPassword(password) {
@@ -327,6 +368,57 @@ function getStudentIdFromRequest(req) {
   );
 }
 
+async function getAuthenticatedUser(req) {
+  const studentId = getStudentIdFromRequest(req);
+
+  if (!studentId || !isValidStudentId(studentId)) {
+    return null;
+  }
+
+  const result = await pool.query(
+    "SELECT id, student_id, role FROM users WHERE student_id = $1",
+    [studentId],
+  );
+
+  return result.rows[0] || null;
+}
+
+async function requireAuthenticatedUser(req, res, next) {
+  try {
+    const user = await getAuthenticatedUser(req);
+
+    if (!user) {
+      return res.status(401).json({ message: "Önce giriş yapmalısın." });
+    }
+
+    req.authUser = user;
+    return next();
+  } catch (error) {
+    console.error("Kimlik doğrulama hatası:", error);
+    return res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+}
+
+async function requireAdmin(req, res, next) {
+  try {
+    const user = await getAuthenticatedUser(req);
+
+    if (!user) {
+      return res.status(401).json({ message: "Önce giriş yapmalısın." });
+    }
+
+    if (user.role !== "admin") {
+      return res.status(403).json({ message: "Bu alana erişim yetkin yok." });
+    }
+
+    req.authUser = user;
+    return next();
+  } catch (error) {
+    console.error("Admin yetkilendirme hatası:", error);
+    return res.status(500).json({ message: "Sunucu hatası oluştu." });
+  }
+}
+
 function isValidFloor(floor) {
   return Number.isInteger(floor) && floor >= 1 && floor <= 3;
 }
@@ -450,7 +542,7 @@ app.post("/api/login", async (req, res) => {
   try {
     // Veritabanı Sorgusu (SQL Injection'ı önlemek için parametrik sorgu [$1, $2] kullanıyoruz)
     const result = await pool.query(
-      "SELECT * FROM users WHERE student_id = $1",
+      "SELECT id, student_id, role, password_hash FROM users WHERE student_id = $1",
       [studentId],
     );
 
@@ -470,11 +562,29 @@ app.post("/api/login", async (req, res) => {
       sameSite: "lax",
     });
 
-    res.status(200).json({ message: "Giriş başarılı. Hoş geldin!" });
+    const role = result.rows[0].role || "student";
+
+    res.status(200).json({
+      message: "Giriş başarılı. Hoş geldin!",
+      role,
+      redirectTo:
+        role === "admin" ? "/pages/admin-dashboard.html" : "/index.html",
+    });
   } catch (error) {
     console.error("Veritabanı Hatası:", error);
     res.status(500).json({ message: "Sunucu hatası oluştu." });
   }
+});
+
+app.get("/api/auth/me", requireAuthenticatedUser, (req, res) => {
+  res.status(200).json({
+    authenticated: true,
+    user: req.authUser,
+    redirectTo:
+      req.authUser.role === "admin"
+        ? "/pages/admin-dashboard.html"
+        : "/index.html",
+  });
 });
 
 app.post("/api/logout", (req, res) => {
@@ -979,6 +1089,8 @@ app.delete("/api/book-loans/:id", async (req, res) => {
 });
 
 // 6. Admin Endpoints
+app.use("/api/admin", requireAdmin);
+
 app.get("/api/admin/dashboard", async (req, res) => {
   try {
     const totalBooksResult = await pool.query("SELECT COUNT(*) as count FROM books");
