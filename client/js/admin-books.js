@@ -1,5 +1,4 @@
 let allBooks = [];
-let currentEditId = null;
 
 document.addEventListener("DOMContentLoaded", function () {
   const sidebars = document.querySelectorAll(".sidebar a");

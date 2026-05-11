@@ -3,16 +3,8 @@ import cors from "cors";
 import pkg from "pg";
 import argon2 from "argon2";
 import nodemailer from "nodemailer";
-import { fileURLToPath } from "url";
-import { dirname, join } from "path";
-
-// 1. ESM (Module) ortamı için __dirname çözümlemesi
-const __filename = fileURLToPath(import.meta.url);
-
-const __dirname = dirname(__filename);
 
 const PORT = process.env.PORT || 3000;
-const CLIENT_DIR = join(__dirname, "..", "client");
 const { Pool } = pkg;
 const COMPLAINT_EMAIL_USER =
   process.env.COMPLAINT_EMAIL_USER || "kutuphanesikayet@gmail.com";
@@ -1332,8 +1324,10 @@ app.put("/api/admin/loans/:id", async (req, res) => {
   }
 
   try {
+    // Karmaşık CASE mantığı yerine doğrudan NOW() atandı
     const result = await pool.query(
-      `UPDATE book_loans SET status = $1, returned_at = CASE WHEN $1 != 'active' THEN NOW() ELSE returned_at END
+      `UPDATE book_loans 
+       SET status = $1, returned_at = NOW()
        WHERE id = $2 RETURNING *`,
       [status, loanId]
     );

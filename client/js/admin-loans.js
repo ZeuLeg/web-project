@@ -98,7 +98,7 @@ function filterLoans() {
   renderLoansTable(filtered);
 }
 
-async function returnBook(loanId) {
+window.returnBook = async function (loanId) {
   try {
     const response = await fetch(`/api/admin/loans/${loanId}`, {
       method: "PUT",
