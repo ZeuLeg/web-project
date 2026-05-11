@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
-        const response = await fetch("/api/logout", { method: "POST" });
+        const response = await fetch("/api/logout", { method: "POST", credentials: 'include' });
         if (response.ok) {
           window.location.href = "/pages/login.html";
         }

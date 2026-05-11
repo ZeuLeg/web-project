@@ -17,7 +17,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
-        const response = await fetch("/api/logout", { method: "POST" });
+        const response = await fetch("/api/logout", { method: "POST", credentials: 'include' });
         if (response.ok) {
           window.location.href = "/pages/login.html";
         }
@@ -41,7 +41,7 @@ let allMembers = [];
 
 async function loadMembers() {
   try {
-    const response = await fetch("/api/admin/members");
+    const response = await fetch("/api/admin/members", { credentials: 'include' });
     const data = await response.json();
 
     if (response.ok) {

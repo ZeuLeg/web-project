@@ -19,7 +19,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
-        const response = await fetch("/api/logout", { method: "POST" });
+        const response = await fetch("/api/logout", { method: "POST", credentials: 'include' });
         if (response.ok) {
           window.location.href = "/pages/login.html";
         }
@@ -49,7 +49,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function loadBooks() {
   try {
-    const response = await fetch("/api/admin/books");
+    const response = await fetch("/api/admin/books", { credentials: 'include' });
     const data = await response.json();
 
     if (response.ok) {
@@ -100,6 +100,7 @@ async function addBook(title, author, category) {
   try {
     const response = await fetch("/api/admin/books", {
       method: "POST",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, author, category }),
     });
@@ -136,6 +137,7 @@ async function updateBook(bookId, title, author, category) {
   try {
     const response = await fetch(`/api/admin/books/${bookId}`, {
       method: "PUT",
+      credentials: 'include',
       headers: { "Content-Type": "application/json" },
       body: JSON.stringify({ title, author, category }),
     });
@@ -158,6 +160,7 @@ window.deleteBook = async function (bookId) {
   try {
     const response = await fetch(`/api/admin/books/${bookId}`, {
       method: "DELETE",
+      credentials: 'include',
     });
     const data = await response.json();
 

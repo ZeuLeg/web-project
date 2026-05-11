@@ -18,7 +18,7 @@ document.addEventListener("DOMContentLoaded", function () {
   if (logoutBtn) {
     logoutBtn.addEventListener("click", async () => {
       try {
-        const response = await fetch("/api/logout", { method: "POST" });
+        const response = await fetch("/api/logout", { method: "POST", credentials: 'include' });
         if (response.ok) {
           window.location.href = "/pages/login.html";
         }
@@ -34,7 +34,7 @@ document.addEventListener("DOMContentLoaded", function () {
 
 async function loadDashboardData() {
   try {
-    const response = await fetch("/api/admin/dashboard");
+    const response = await fetch("/api/admin/dashboard", { credentials: 'include' });
     const data = await response.json();
 
     if (response.ok) {
