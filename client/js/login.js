@@ -62,7 +62,20 @@ form.addEventListener("submit", async (event) => {
     document.cookie = `studentId=${encodeURIComponent(
       studentId,
     )}; path=/; max-age=604800; SameSite=Lax`;
-    window.location.replace(data.redirectTo || "/index.html");
+
+    // Ek güvenlik: sunucunun cookie'yi okuyabildiğini doğrulayıp
+    // ona göre yönlendir (bazı tarayıcı/ortamlarda cookie hemen görünmeyebilir).
+    try {
+      const meResp = await fetch("/api/auth/me");
+      if (meResp.ok) {
+        const meData = await meResp.json().catch(() => ({}));
+        window.location.replace(meData.redirectTo || data.redirectTo || "/index.html");
+      } else {
+        window.location.replace(data.redirectTo || "/index.html");
+      }
+    } catch (e) {
+      window.location.replace(data.redirectTo || "/index.html");
+    }
   } catch {
     setMessage("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
   } finally {
