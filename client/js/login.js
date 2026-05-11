@@ -74,7 +74,7 @@ form.addEventListener("submit", async (event) => {
       } else {
         window.location.replace(data.redirectTo || "/index.html");
       }
-    } catch (e) {
+    } catch {
       window.location.replace(data.redirectTo || "/index.html");
     }
   } catch {
