@@ -321,7 +321,7 @@ async function kitapAl() {
     await kitaplarıYukle();
     button.disabled = false;
     button.textContent = "Kitap Al";
-  } catch (error) {
+  } catch {
     setKitapMesaji("Sunucuya bağlanılamadı. Lütfen tekrar deneyin.", "error");
     button.disabled = false;
     button.textContent = "Kitap Al";
