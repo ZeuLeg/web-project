@@ -3,7 +3,7 @@ const message = document.querySelector("#formMessage");
 
 async function redirectIfAuthenticated() {
   try {
-    const response = await fetch("/api/auth/me");
+    const response = await fetch("/api/auth/me", { credentials: 'include' });
 
     if (!response.ok) {
       return;
@@ -40,6 +40,7 @@ form.addEventListener("submit", async (event) => {
   try {
     const response = await fetch("/api/login", {
       method: "POST",
+      credentials: 'include',
       headers: {
         "Content-Type": "application/json",
       },
@@ -66,7 +67,7 @@ form.addEventListener("submit", async (event) => {
     // Ek güvenlik: sunucunun cookie'yi okuyabildiğini doğrulayıp
     // ona göre yönlendir (bazı tarayıcı/ortamlarda cookie hemen görünmeyebilir).
     try {
-      const meResp = await fetch("/api/auth/me");
+      const meResp = await fetch("/api/auth/me", { credentials: 'include' });
       if (meResp.ok) {
         const meData = await meResp.json().catch(() => ({}));
         window.location.replace(meData.redirectTo || data.redirectTo || "/index.html");
