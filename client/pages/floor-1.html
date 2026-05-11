@@ -94,21 +94,7 @@
       let selectedTableNo = null;
       let selectedSeatNo = null;
       // Ogrenci ID'sini localStorage veya cookie'den alan fonksiyon
-      function getSavedStudentId() {
-        const storedStudentId = localStorage.getItem("studentId");
-
-        if (storedStudentId) {
-          return storedStudentId;
-        }
-
-        const cookieStudentId = document.cookie
-          .split("; ")
-          .find((cookie) => cookie.startsWith("studentId="));
-
-        return cookieStudentId
-          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
-          : "";
-      }
+      // HttpOnly cookie sunucu tarafından otomatik gönderilir
 
       async function loadOccupiedSeatKeys() {
         try {
@@ -229,8 +215,8 @@
             headers: {
               "Content-Type": "application/json",
             },
+            credentials: "include",
             body: JSON.stringify({
-              studentId,
               floor: floorNumber,
               deskNumber: selectedTableNo,
               seatNumber: selectedSeatNo,

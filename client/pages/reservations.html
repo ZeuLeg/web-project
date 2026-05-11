@@ -76,21 +76,7 @@
       const reservationList = document.getElementById("reservationList");
       const reservationMessage = document.getElementById("reservationMessage");
 
-      function getSavedStudentId() {
-        const storedStudentId = localStorage.getItem("studentId");
-
-        if (storedStudentId) {
-          return storedStudentId;
-        }
-
-        const cookieStudentId = document.cookie
-          .split("; ")
-          .find((cookie) => cookie.startsWith("studentId="));
-
-        return cookieStudentId
-          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
-          : "";
-      }
+      // HttpOnly cookie sunucu tarafından otomatik gönderilir
 
       function formatDate(value) {
         return new Intl.DateTimeFormat("tr-TR", {
@@ -105,17 +91,10 @@
       }
 
       async function loadReservations() {
-        const studentId = getSavedStudentId();
-
-        if (!studentId) {
-          setMessage("Randevunu görmek için önce giriş yapmalısın.");
-          return;
-        }
-
         try {
-          const response = await fetch(
-            `/api/reservations?studentId=${encodeURIComponent(studentId)}`,
-          );
+          const response = await fetch("/api/reservations", {
+            credentials: "include",
+          });
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
@@ -187,7 +166,7 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ studentId }),
+            credentials: "include",
           });
           const data = await response.json().catch(() => ({}));
 

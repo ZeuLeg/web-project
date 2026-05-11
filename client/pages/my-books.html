@@ -95,21 +95,7 @@
       const activeLoanCount = document.getElementById("activeLoanCount");
       const totalLoanCount = document.getElementById("totalLoanCount");
 
-      function getSavedStudentId() {
-        const storedStudentId = localStorage.getItem("studentId");
-
-        if (storedStudentId) {
-          return storedStudentId;
-        }
-
-        const cookieStudentId = document.cookie
-          .split("; ")
-          .find((cookie) => cookie.startsWith("studentId="));
-
-        return cookieStudentId
-          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
-          : "";
-      }
+      // HttpOnly cookie sunucu tarafından otomatik gönderilir
 
       function formatDate(value) {
         if (!value) {
@@ -155,23 +141,16 @@
       }
 
       async function loadLoans() {
-        const studentId = getSavedStudentId();
-
         loanList.innerHTML = "";
         activeLoanCount.textContent = "0";
         totalLoanCount.textContent = "0";
 
-        if (!studentId) {
-          setMessage("Kitaplarını görmek için önce giriş yapmalısın.");
-          return;
-        }
-
-        setMessage("Kitapların yükleniyor...");
+        setMessage("Kitapların yüklenİyor...");
 
         try {
-          const response = await fetch(
-            `/api/book-loans?studentId=${encodeURIComponent(studentId)}`,
-          );
+          const response = await fetch("/api/book-loans", {
+            credentials: "include",
+          });
           const data = await response.json().catch(() => ({}));
 
           if (!response.ok) {
@@ -254,7 +233,6 @@
       }
 
       async function cancelLoan(loanId, button) {
-        const studentId = getSavedStudentId();
         const shouldCancel = window.confirm(
           "Bu kitabın ödünç kaydını iptal etmek istiyor musun?",
         );
@@ -272,7 +250,7 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ studentId }),
+            credentials: "include",
           });
           const data = await response.json().catch(() => ({}));
 

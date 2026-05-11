@@ -196,21 +196,7 @@
         "Yazılım Mimarisi": { kategori: "yazilim", durum: "uygun" },
       };
 
-      function getSavedStudentId() {
-        const storedStudentId = localStorage.getItem("studentId");
-
-        if (storedStudentId) {
-          return storedStudentId;
-        }
-
-        const cookieStudentId = document.cookie
-          .split("; ")
-          .find((cookie) => cookie.startsWith("studentId="));
-
-        return cookieStudentId
-          ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("="))
-          : "";
-      }
+      // HttpOnly cookie sunucu tarafından otomatik gönderilir
 
       function setKitapMesaji(text, type = "") {
         const message = document.getElementById("kitapMesaji");
@@ -399,7 +385,6 @@
       }
 
       async function kitapAl() {
-        const studentId = getSavedStudentId();
         const secilenler = Array.from(
           document.querySelectorAll(".kitap-checkbox:checked"),
         );
@@ -409,11 +394,6 @@
         const bookTitles = secilenler.map(
           (checkbox) => checkbox.dataset.bookName,
         );
-
-        if (!studentId) {
-          setKitapMesaji("Kitap almak için önce giriş yapmalısın.", "error");
-          return;
-        }
 
         if (secilenler.length === 0) {
           setKitapMesaji("Lütfen en az bir kitap seçin.", "error");
@@ -436,7 +416,8 @@
             headers: {
               "Content-Type": "application/json",
             },
-            body: JSON.stringify({ studentId, bookIds, bookTitles }),
+            credentials: 'include',
+            body: JSON.stringify({ bookIds, bookTitles }),
           });
           const data = await response.json().catch(() => ({}));
 

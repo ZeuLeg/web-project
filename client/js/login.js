@@ -57,15 +57,12 @@ form.addEventListener("submit", async (event) => {
       return;
     }
 
-    const studentId = form.elements.studentId.value.trim();
     setMessage(data.message || "Giriş başarılı.", "success");
-    localStorage.setItem("studentId", studentId);
-    document.cookie = `studentId=${encodeURIComponent(
-      studentId,
-    )}; path=/; max-age=604800; SameSite=Lax`;
 
-    // Ek güvenlik: sunucunun cookie'yi okuyabildiğini doğrulayıp
-    // ona göre yönlendir (bazı tarayıcı/ortamlarda cookie hemen görünmeyebilir).
+    // HttpOnly cookie sunucu tarafından otomatik olarak ayarlanır.
+    // Client tarafında localStorage/document.cookie depolaması gerekmez.
+
+    // Sunucunun cookie'yi okuduğunu doğrulayıp yönlendir
     try {
       const meResp = await fetch("/api/auth/me", { credentials: 'include' });
       if (meResp.ok) {

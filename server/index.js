@@ -350,11 +350,8 @@ function getCookieValue(req, name) {
 }
 
 function getStudentIdFromRequest(req) {
-  return (
-    req.body?.studentId?.trim() ||
-    req.query?.studentId?.trim() ||
-    getCookieValue(req, "studentId").trim()
-  );
+  // Sadece HttpOnly cookie'den oku - body/query güvenilmez
+  return getCookieValue(req, "studentId").trim();
 }
 
 async function getAuthenticatedUser(req) {
@@ -546,7 +543,7 @@ app.post("/api/login", async (req, res) => {
     }
 
     res.cookie("studentId", studentId, {
-      httpOnly: false,
+      httpOnly: true,
       maxAge: 7 * 24 * 60 * 60 * 1000,
       sameSite: "lax",
     });

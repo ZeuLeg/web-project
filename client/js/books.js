@@ -259,28 +259,12 @@ function checkboxEkle() {
   });
 }
 
-function getSavedStudentId() {
-  const storedStudentId = localStorage.getItem("studentId");
-
-  if (storedStudentId) {
-    return storedStudentId;
-  }
-
-  const cookieStudentId = document.cookie.split("; ").find((cookie) => cookie.startsWith("studentId="));
-
-  return cookieStudentId ? decodeURIComponent(cookieStudentId.split("=").slice(1).join("=")) : "";
-}
+// HttpOnly cookie sunucu tarafından otomatik gönderilir (credentials: 'include' ile)
 
 async function kitapAl() {
-  const studentId = getSavedStudentId();
   const secilenler = Array.from(document.querySelectorAll(".kitap-checkbox:checked"));
   const bookIds = secilenler.map((checkbox) => Number(checkbox.dataset.bookId)).filter(Boolean);
   const bookTitles = secilenler.map((checkbox) => checkbox.dataset.bookName);
-
-  if (!studentId) {
-    setKitapMesaji("Kitap almak için önce giriş yapmalısın.", "error");
-    return;
-  }
 
   if (secilenler.length === 0) {
     setKitapMesaji("Lütfen en az bir kitap seçin.", "error");
@@ -301,7 +285,8 @@ async function kitapAl() {
     const response = await fetch("/api/book-loans", {
       method: "POST",
       headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ studentId, bookIds, bookTitles }),
+      credentials: 'include',
+      body: JSON.stringify({ bookIds, bookTitles }),
     });
     const data = await response.json().catch(() => ({}));
 

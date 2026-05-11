@@ -150,15 +150,12 @@
         try {
           await fetch("/api/logout", {
             method: "POST",
+            credentials: "include",
           });
         } catch (error) {
-          // Sunucuya ulaşılamasa bile tarayıcıdaki oturum bilgilerini temizle.
+          console.error("Çıkış hatası:", error);
         } finally {
-          localStorage.removeItem("studentId");
-          document.cookie =
-            "studentId=; path=/; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
-          document.cookie =
-            "studentId=; path=/api; expires=Thu, 01 Jan 1970 00:00:00 GMT; SameSite=Lax";
+          // HttpOnly cookie sunucu tarafından temizlendi.
           window.location.replace("./pages/login.html");
         }
       });

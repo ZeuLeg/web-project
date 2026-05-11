@@ -4,5 +4,6 @@
   "eslint.workingDirectories": [
     "./server",
     "./client"
-  ]
+  ],
+  "eslint.lintTask.enable": true
 }
