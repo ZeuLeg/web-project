@@ -66,7 +66,6 @@ function renderMembersTable(members) {
       <td>${member.active_loans || 0}</td>
       <td>${member.total_loans || 0}</td>
       <td><span class="status status-aktif">Aktif</span></td>
-      <td><button class="btn btn-edit" onclick="viewMemberProfile('${member.id}')">İncele</button></td>
     </tr>
   `
     )
@@ -77,8 +76,4 @@ function filterMembers() {
   const searchTerm = document.querySelector(".search-bar input").value.toLowerCase();
   const filtered = allMembers.filter((m) => m.student_id.toLowerCase().includes(searchTerm));
   renderMembersTable(filtered);
-}
-
-window.viewMemberProfile = function (memberId) {
-  alert("Üye Detayları:\nID: " + memberId);
 }
