@@ -93,8 +93,7 @@
       const floorNumber = 1;
       let selectedTableNo = null;
       let selectedSeatNo = null;
-      // Ogrenci ID'sini localStorage veya cookie'den alan fonksiyon
-      // HttpOnly cookie sunucu tarafından otomatik gönderilir
+      // Kimlik doğrulama HttpOnly cookie ile sunucu tarafından otomatik yapılır
 
       async function loadOccupiedSeatKeys() {
         try {
@@ -184,15 +183,6 @@
       }
 
       async function confirmReservation() {
-        const studentId = getSavedStudentId();
-
-        if (!studentId) {
-          deskStatusText.innerText =
-            "Randevu almak için önce giriş yapmalısın.";
-          deskStatusText.style.color = "#e74c3c";
-          return;
-        }
-
         if (!selectedTableNo || !selectedSeatNo) {
           deskStatusText.innerText = "Lütfen önce bir koltuk seçin.";
           deskStatusText.style.color = "#e74c3c";

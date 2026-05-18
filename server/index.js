@@ -224,22 +224,6 @@ async function verifyPassword(password, storedHash) {
   return argon2.verify(storedHash, password);
 }
 
-async function verifyUserPassword(user, password) {
-  if (await verifyPassword(password, user.password_hash)) {
-    return true;
-  }
-
-  if (user.password === password || user.password_hash === password) {
-    await pool.query("UPDATE users SET password_hash = $1 WHERE id = $2", [
-      await hashPassword(password),
-      user.id,
-    ]);
-    return true;
-  }
-
-  return false;
-}
-
 function isValidTcId(tcId) {
   return /^[0-9]{11}$/.test(tcId);
 }
@@ -535,7 +519,7 @@ app.post("/api/login", async (req, res) => {
     // Eğer eşleşen kayıt yoksa (Dönen satır sayısı 0 ise)
     if (
       result.rows.length === 0 ||
-      !(await verifyUserPassword(result.rows[0], password))
+      !(await verifyPassword(password, result.rows[0].password_hash))
     ) {
       return res
         .status(401)

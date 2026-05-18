@@ -153,15 +153,6 @@
       }
 
       async function confirmReservation() {
-        const studentId = getSavedStudentId();
-
-        if (!studentId) {
-          deskStatusText.innerText =
-            "Randevu almak için önce giriş yapmalısın.";
-          deskStatusText.style.color = "#e74c3c";
-          return;
-        }
-
         if (!selectedTableNo || !selectedSeatNo) {
           deskStatusText.innerText = "Lütfen önce bir koltuk seçin.";
           deskStatusText.style.color = "#e74c3c";
