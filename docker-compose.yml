@@ -5,7 +5,7 @@ services:
     container_name: library_api
     restart: unless-stopped
     ports:
-      - "3000:3000"
+      - "127.0.0.1:3000:3000"
     environment:
       - DATABASE_URL=postgresql://${DB_USER}:${DB_PASS}@postgres-db:5432/${DB_NAME}
       - PORT=3000
@@ -52,7 +52,7 @@ services:
     container_name: library_frontend
     restart: unless-stopped
     ports:
-      - "8081:80"
+      - "127.0.0.1:8081:80"
     volumes:
       # Client klasöründeki dosyaları, Nginx'in yayın klasörüne "Read Only" olarak kopyalar
       - ./client:/usr/share/nginx/html:ro
