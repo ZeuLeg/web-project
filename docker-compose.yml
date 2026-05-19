@@ -24,6 +24,8 @@ services:
       options:
         max-size: "10m"
         max-file: "3"
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
 
   postgres-db:
     image: postgres:18-alpine
@@ -43,6 +45,8 @@ services:
         limits:
           cpus: "1.0"
           memory: "1G"
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
   frontend-server:
     image: nginx:alpine
     container_name: library_frontend
@@ -60,6 +64,8 @@ services:
         limits:
           cpus: "0.5"
           memory: "256M"
+    labels:
+      - com.centurylinklabs.watchtower.enable=false
 
 volumes:
   library_postgres_data:
