@@ -23,7 +23,7 @@
     "argon2": "^0.44.0",
     "cors": "^2.8.6",
     "express": "^5.2.1",
-    "nodemailer": "^8.0.7",
+    "nodemailer": "10.2.0",
     "pg": "^8.20.0"
   },
   "devDependencies": {
