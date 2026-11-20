@@ -3,8 +3,11 @@ import cors from "cors";
 import pkg from "pg";
 import argon2 from "argon2";
 import nodemailer from "nodemailer";
+import { SESSION_COOKIE_NAME, SESSION_TTL_MS, assertSessionSecret, signSessionCookie, verifySessionCookie } from "./auth-session.js";
 
 const PORT = process.env.PORT || 3000;
+const AUTH_SESSION_SECRET = process.env.AUTH_SESSION_SECRET;
+assertSessionSecret(AUTH_SESSION_SECRET);
 const { Pool } = pkg;
 const COMPLAINT_EMAIL_USER =
   process.env.COMPLAINT_EMAIL_USER || "kutuphanesikayet@gmail.com";
@@ -174,36 +177,7 @@ async function initializeDatabase() {
         category = EXCLUDED.category
   `);
 
-  const seedUsers = [
-    {
-      tcId: "10000000001",
-      studentId: "900000001",
-      password: "Admin1234",
-      role: "admin",
-    },
-    {
-      tcId: "10000000002",
-      studentId: "900000002",
-      password: "Ogrenci1234",
-      role: "student",
-    },
-  ];
-
-  for (const seedUser of seedUsers) {
-    await pool.query(
-      `
-        INSERT INTO users (tc_id, student_id, password_hash, role)
-        VALUES ($1, $2, $3, $4)
-        ON CONFLICT DO NOTHING
-      `,
-      [
-        seedUser.tcId,
-        seedUser.studentId,
-        await hashPassword(seedUser.password),
-        seedUser.role,
-      ],
-    );
-  }
+  // Do not seed predictable production accounts. Provision/rotate accounts securely.
 }
 
 async function hashPassword(password) {
@@ -330,12 +304,16 @@ function getCookieValue(req, name) {
     return "";
   }
 
-  return decodeURIComponent(cookie.split("=").slice(1).join("="));
+  try {
+    return decodeURIComponent(cookie.split("=").slice(1).join("="));
+  } catch {
+    return "";
+  }
 }
 
 function getStudentIdFromRequest(req) {
-  // Sadece HttpOnly cookie'den oku - body/query güvenilmez
-  return getCookieValue(req, "studentId").trim();
+  // Verify the server-side signature; never trust a client-supplied student ID.
+  return verifySessionCookie(getCookieValue(req, SESSION_COOKIE_NAME), AUTH_SESSION_SECRET) || "";
 }
 
 async function getAuthenticatedUser(req) {
@@ -526,9 +504,11 @@ app.post("/api/login", async (req, res) => {
         .json({ message: "Öğrenci numarası veya şifre yanlış." });
     }
 
-    res.cookie("studentId", studentId, {
+    res.cookie(SESSION_COOKIE_NAME, signSessionCookie(studentId, AUTH_SESSION_SECRET), {
+      path: "/",
       httpOnly: true,
-      maxAge: 7 * 24 * 60 * 60 * 1000,
+      secure: true,
+      maxAge: SESSION_TTL_MS,
       sameSite: "lax",
     });
 
@@ -558,16 +538,16 @@ app.get("/api/auth/me", requireAuthenticatedUser, (req, res) => {
 });
 
 app.post("/api/logout", (req, res) => {
-  res.clearCookie("studentId", {
-    path: "/",
-    httpOnly: true,
-    sameSite: "lax",
-  });
-  res.clearCookie("studentId", {
-    path: "/api",
-    httpOnly: true,
-    sameSite: "lax",
-  });
+  for (const name of [SESSION_COOKIE_NAME, "studentId"]) {
+    for (const path of ["/", "/api"]) {
+      res.clearCookie(name, {
+        path,
+        httpOnly: true,
+        secure: true,
+        sameSite: "lax",
+      });
+    }
+  }
   res.status(200).json({ message: "Çıkış yapıldı." });
 });
 
